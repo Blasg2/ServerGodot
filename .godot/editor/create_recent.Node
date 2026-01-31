@@ -1,0 +1,7 @@
+Button
+CharacterBody3D
+Control
+MultiplayerSynchronizer
+Camera3D
+Node3D
+MultiplayerSpawner

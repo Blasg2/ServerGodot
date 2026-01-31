@@ -1,0 +1,4 @@
+res://scenes/characters/character.tscn
+res://addons/_Godot-IDE_/IDE.gd
+res://script/character.gd
+res://tools/account_creator.gd
