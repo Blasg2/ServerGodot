@@ -7,21 +7,25 @@ var character_scene = preload("res://scenes/characters/character.tscn")
 var players: Dictionary = {}
 
 func _ready() -> void:
+
 	print("=== GAME WORLD READY ===")
 	print("Is server: ", multiplayer.is_server())
-	
+
 	if multiplayer.is_server():
 		print("Setting up server...")
 		multiplayer.peer_connected.connect(_on_player_connected)
 		multiplayer.peer_disconnected.connect(_on_player_disconnected)
 		NetworkManager.player_authenticated.connect(_on_player_authenticated)
 		print("✓ Server setup complete")
-	
+	else:
+		# CLIENT: Tell server we're ready
+		NetworkManager.notify_ready_in_world()
+
 	if spawner:
 		spawner.spawned.connect(_on_entity_spawned)
 		spawner.despawned.connect(_on_entity_despawned)
 		print("✓ Spawner connected")
-	
+
 	print("========================")
 
 func _on_player_connected(id: int) -> void:

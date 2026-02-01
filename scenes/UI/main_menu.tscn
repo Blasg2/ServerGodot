@@ -38,5 +38,3 @@ offset_left = 493.0
 offset_top = 66.0
 offset_right = 664.0
 offset_bottom = 97.0
-
-[connection signal="text_submitted" from="Password" to="." method="_on_password_text_submitted"]

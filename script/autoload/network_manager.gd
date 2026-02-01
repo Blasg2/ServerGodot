@@ -21,7 +21,7 @@ signal login_successful(account_data: Dictionary)
 signal login_failed(reason: String)
 signal player_authenticated(id: int)
 
-
+	
 func _ready() -> void:
 	var args = OS.get_cmdline_args()
 	
@@ -29,6 +29,23 @@ func _ready() -> void:
 		start_server()
 	elif "--host" in args:
 		start_server()
+
+
+
+## CLIENT: Tell server we're ready in game world
+func notify_ready_in_world() -> void:
+	rpc_id(1, "_client_ready_in_world")
+
+## SERVER: Client is now ready for spawning
+@rpc("any_peer", "reliable")
+func _client_ready_in_world() -> void:
+	var sender_id = multiplayer.get_remote_sender_id()
+	print(">>> Client ready in world: ", sender_id)
+	
+	if authenticated_players.has(sender_id):
+		player_authenticated.emit(sender_id)  # NOW spawn
+
+
 
 func start_server(port: int = default_port) -> void:
 	peer.create_server(port, max_players)
@@ -40,6 +57,7 @@ func start_server(port: int = default_port) -> void:
 	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 	
 	print("Server started on port ", port)
+
 
 func connect_to_server(address: String = "localhost", port: int = default_port) -> void:
 	peer.create_client(address, port)
@@ -96,9 +114,6 @@ func _receive_login(username: String, password: String) -> void:
 	print("✓ Stored in authenticated_players")
 	
 	rpc_id(sender_id, "_login_response", true, account, "")
-	
-	# Emit signal so game_world knows
-	player_authenticated.emit(sender_id)
 
 ## CLIENT: Receive login response from server
 @rpc("authority", "reliable")
