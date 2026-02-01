@@ -16,6 +16,8 @@ var pending_password: String = ""
 
 ## Authentication state (SERVER ONLY)
 var authenticated_players: Dictionary = {}
+var online_usernames: Dictionary = {}  # {username: peer_id}
+
 
 ## Signals
 signal player_connected(id: int)
@@ -80,6 +82,13 @@ func _on_player_connected(id: int) -> void:
 
 func _on_player_disconnected(id: int) -> void:
 	print("Player disconnected: ", id)
+	
+	if authenticated_players.has(id):
+		var username = authenticated_players[id].get("username", "unknown")
+		authenticated_players.erase(id)
+		online_usernames.erase(username)  # Remove from online list
+		print("Removed ", username, " from authenticated players")
+	
 	player_disconnected.emit(id)
 
 func _on_connected_to_server() -> void:
@@ -116,14 +125,22 @@ func _receive_login(username: String, password: String) -> void:
 		rpc_id(sender_id, "_login_response", false, {}, "Invalid credentials")
 		return
 	
+	# Check if user is already online
+	if online_usernames.has(username):
+		print("❌ User already online: ", username)
+		rpc_id(sender_id, "_login_response", false, {}, "User already logged in")
+		return
+	
 	authenticated_players[sender_id] = account
+	online_usernames[username] = sender_id
 	print("✓ Player authenticated: ", username, " (peer ", sender_id, ")")
 	print("Total authenticated players: ", authenticated_players.size())
 	print("=====================\n")
 	
 	rpc_id(sender_id, "_login_response", true, account, "")
 	
-	# DON'T emit here! Only emit from _client_ready_in_world
+	player_authenticated.emit(sender_id)
+	
 ## CLIENT: Receive login response from server
 @rpc("authority", "reliable")
 func _login_response(success: bool, account_data: Dictionary, error_message: String) -> void:

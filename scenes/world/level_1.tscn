@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://uaj1iyaf1711"]
 
+[ext_resource type="Script" uid="uid://bjfqedgv44k07" path="res://scenes/world/level_manager.gd" id="1_pq706"]
+
 [sub_resource type="Gradient" id="Gradient_4rhad"]
 colors = PackedColorArray(0, 0.498039, 0, 1, 0.31, 1, 0.3215, 1)
 
@@ -26,6 +28,7 @@ size = Vector3(14.0357, 0.229823, 14.0357)
 [sub_resource type="BoxShape3D" id="BoxShape3D_sl2e5"]
 
 [node name="level1" type="Node3D" unique_id=713751001]
+script = ExtResource("1_pq706")
 
 [node name="Enviroment" type="Node3D" parent="." unique_id=1394470816]
 

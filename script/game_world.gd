@@ -7,13 +7,9 @@ signal level_ready(level: Node3D)
 @onready var level_spawner: MultiplayerSpawner = $LevelSpawn
 
 var current_level: Node3D
-var entities: Node3D
-var entity_spawner: MultiplayerSpawner
-
 var character_scene: PackedScene = load("uid://t04xmkgtd7i8") # character.tscn
 var default_level_scene: PackedScene = load("uid://uaj1iyaf1711") # level_1.tscn
 
-var players: Dictionary = {}
 var game_started: bool = false
 
 func _ready() -> void:
@@ -70,13 +66,33 @@ func _handle_client_authentication() -> void:
 	if not multiplayer.multiplayer_peer or multiplayer.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
 		await multiplayer.connected_to_server
 
+	# Connect signals BEFORE sending login
+	if not NetworkManager.login_successful.is_connected(_on_login_success):
+		NetworkManager.login_successful.connect(_on_login_success)
+	if not NetworkManager.login_failed.is_connected(_on_login_fail):
+		NetworkManager.login_failed.connect(_on_login_fail)
+
 	print("Connected! Sending login...")
 	NetworkManager.send_login(NetworkManager.pending_username, NetworkManager.pending_password)
 
-	await NetworkManager.login_successful
-
+func _on_login_success(account_data: Dictionary) -> void:
 	print("Authenticated! Notifying server we're ready...")
 	NetworkManager.notify_ready_in_world()
+	var menu = levels.get_node_or_null("MainMenu")
+	if menu:
+		menu.queue_free()
+
+func _on_login_fail(reason: String) -> void:
+	print("Login failed: ", reason)
+	game_started = false
+	
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+		multiplayer.multiplayer_peer = null
+	
+	var menu = levels.get_node_or_null("MainMenu")
+	if menu:
+		menu.visible = true
 
 func _ensure_level_spawned() -> void:
 	if not multiplayer.multiplayer_peer:
@@ -117,16 +133,6 @@ func _on_level_spawned(node: Node) -> void:
 	current_level = node
 	print(">>> LEVEL READY: ", current_level.name)
 
-	# These must exist inside the level scene (level_1.tscn).
-	entities = current_level.get_node_or_null("Entities")
-	entity_spawner = current_level.get_node_or_null("MultiplayerSpawner")
-
-	if entity_spawner:
-		if not entity_spawner.spawned.is_connected(_on_entity_spawned):
-			entity_spawner.spawned.connect(_on_entity_spawned)
-		if not entity_spawner.despawned.is_connected(_on_entity_despawned):
-			entity_spawner.despawned.connect(_on_entity_despawned)
-
 	# IMPORTANT: only hide menu if the player actually started the game.
 	if game_started:
 		_hide_main_menu()
@@ -136,8 +142,6 @@ func _on_level_spawned(node: Node) -> void:
 func _on_level_despawned(node: Node) -> void:
 	if node == current_level:
 		current_level = null
-		entities = null
-		entity_spawner = null
 
 func _hide_main_menu() -> void:
 	var menu := levels.get_node_or_null("MainMenu")
@@ -150,38 +154,16 @@ func _on_player_connected(id: int) -> void:
 func _on_player_authenticated(id: int) -> void:
 	if multiplayer.is_server():
 		await _wait_for_level_ready()
-		_spawn_player(id)
+		
+		# Tell the current level to spawn this player
+		if current_level and current_level.has_method("spawn_player"):
+			current_level.spawn_player(id, character_scene)
+		else:
+			push_error("Current level doesn't have spawn_player method!")
 
 func _on_player_disconnected(id: int) -> void:
 	print(">>> PEER DISCONNECTED: ", id)
-	if players.has(id):
-		players[id].queue_free()
-		players.erase(id)
-
-func _spawn_player(id: int) -> void:
-	if players.has(id):
-		return
-	if not multiplayer.is_server():
-		return
-	if not entities:
-		push_error("No 'Entities' node found in the current level. Add a Node3D named 'Entities' to your level scene.")
-		return
-
-	print(">>> Creating character for ", id)
-	var character = character_scene.instantiate()
-	character.name = str(id)
-	character.player_id = id
-	character.global_position = Vector3(randf_range(-5, 5), 2, randf_range(-5, 5))
-
-	entities.add_child(character, true)
-	players[id] = character
-	print(">>> Spawned! Total: ", players.size())
-
-func _on_entity_spawned(node: Node) -> void:
-	if node is Character:
-		var character = node as Character
-		if character.player_id == NetworkManager.player_id:
-			print("*** MY CHARACTER!")
-
-func _on_entity_despawned(node: Node) -> void:
-	print("*** Despawned: ", node.name)
+	
+	# Tell the current level to remove this player
+	if current_level and current_level.has_method("remove_player"):
+		current_level.remove_player(id)

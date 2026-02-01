@@ -25,4 +25,4 @@ func _on_client_pressed():
 	if world and world.has_method("start_client_game"):
 		world.start_client_game(username, password, address)
 
-	queue_free()
+	visible = false  # Hide instead of delete
