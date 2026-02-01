@@ -11,6 +11,8 @@ const CLIENT_JUMP_VELOCITY: float = 10.0
 const CLIENT_GRAVITY: float = 21.0
 
 @export var mouse_sensitivity: float = 0.002
+@export var username: String = ""
+
 
 func _ready() -> void:
 	# Disable camera immediately

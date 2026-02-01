@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://t04xmkgtd7i8"]
 
 [ext_resource type="Script" uid="uid://dg8ssli0c2ea3" path="res://scenes/characters/character.gd" id="1_cuyo6"]
+[ext_resource type="Script" uid="uid://c44jonyuvxs1o" path="res://scenes/characters/mesh_changer.gd" id="2_1bdar"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nxwtt"]
 radius = 0.3
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_6nn2t"]
+resource_local_to_scene = true
 radius = 0.3
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_x31xa"]
@@ -18,6 +20,12 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath(".:velocity")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath(".:username")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath("MeshInstance3D:mesh:radius")
+properties/4/spawn = true
+properties/4/replication_mode = 2
 
 [node name="Character" type="CharacterBody3D" unique_id=1000598693]
 script = ExtResource("1_cuyo6")
@@ -27,6 +35,7 @@ shape = SubResource("CapsuleShape3D_nxwtt")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1674884962]
 mesh = SubResource("CapsuleMesh_6nn2t")
+script = ExtResource("2_1bdar")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2101673363]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.731583, 0)

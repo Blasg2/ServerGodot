@@ -1,9 +1,8 @@
-res://scenes/world/game_world.tscn
-res://addons/_Godot-IDE_/IDE.gd
-res://script/game_world.gd
-res://scenes/UI/main_menu.gd
 res://scenes/world/level_1.tscn
-res://scenes/world/level_manager.gd
+res://addons/_Godot-IDE_/IDE.gd
+res://scenes/characters/mesh_changer.gd
 res://scenes/characters/character.tscn
+res://scenes/world/game_world.tscn
 res://scenes/characters/character.gd
+res://script/level_manager.gd
 res://script/autoload/network_manager.gd

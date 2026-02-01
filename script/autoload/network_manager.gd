@@ -150,3 +150,10 @@ func _login_response(success: bool, account_data: Dictionary, error_message: Str
 	else:
 		print("❌ Login failed: ", error_message)
 		login_failed.emit(error_message)
+
+func get_account_data(peer_id: int) -> Dictionary:
+	if not is_server:
+		push_warning("get_account_data called on client!")
+		return {}
+	
+	return authenticated_players.get(peer_id, {})
