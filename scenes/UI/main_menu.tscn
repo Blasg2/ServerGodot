@@ -24,3 +24,19 @@ offset_top = 332.0
 offset_right = 705.0
 offset_bottom = 427.0
 text = "server"
+
+[node name="User" type="LineEdit" parent="." unique_id=370504561]
+layout_mode = 0
+offset_left = 490.0
+offset_top = 19.0
+offset_right = 669.0
+offset_bottom = 50.0
+
+[node name="Password" type="LineEdit" parent="." unique_id=1709446315]
+layout_mode = 0
+offset_left = 493.0
+offset_top = 66.0
+offset_right = 664.0
+offset_bottom = 97.0
+
+[connection signal="text_submitted" from="Password" to="." method="_on_password_text_submitted"]

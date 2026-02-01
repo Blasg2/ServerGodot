@@ -1,4 +1,8 @@
-res://scenes/characters/character.tscn
+res://scenes/UI/main_menu.tscn
 res://addons/_Godot-IDE_/IDE.gd
-res://script/character.gd
-res://tools/account_creator.gd
+res://scenes/characters/character.tscn
+res://scenes/characters/character.gd
+res://scenes/UI/main_menu.gd
+res://script/game_world.gd
+res://scenes/world/game_world.tscn
+res://script/autoload/network_manager.gd

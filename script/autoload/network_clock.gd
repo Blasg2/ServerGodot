@@ -47,23 +47,3 @@ func _client_pong(server_tick: int, echo_client_tick: int, echo_client_time_ms: 
 	var one_way_ticks = int((rtt / 2.0) / MS_PER_FRAME)
 	var tick_difference = server_tick - echo_client_tick
 	_tick_offset = tick_difference - one_way_ticks
-#```
-#
-#---
-#
-### Step 4: Game World Scene
-#
-#**scenes/world/game_world.tscn:**
-#
-#Scene structure:
-#```
-#GameWorld (Node3D)
-#├── Environment (lighting, ground, etc.)
-#│   ├── DirectionalLight3D
-#│   ├── Ground (StaticBody3D)
-#│   └── Obstacles...
-#├── Entities (Node3D) [Set unique_name_in_owner = true, name it "%Entities"]
-#├── MultiplayerSpawner
-#│   └── Spawn Path: %Entities
-#│   └── Auto Spawn List: [character.tscn]
-#└── Camera3D (for server view or lobby)

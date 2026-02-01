@@ -4,79 +4,65 @@ extends Node3D
 @onready var entities: Node3D = %Entities
 
 var character_scene = preload("res://scenes/characters/character.tscn")
-var players: Dictionary = {}  # player_id -> Character node
+var players: Dictionary = {}
 
 func _ready() -> void:
 	print("=== GAME WORLD READY ===")
 	print("Is server: ", multiplayer.is_server())
 	
-	# Use Godot's built-in multiplayer signals
 	if multiplayer.is_server():
-		print("Setting up server - connecting to peer signals...")
+		print("Setting up server...")
 		multiplayer.peer_connected.connect(_on_player_connected)
 		multiplayer.peer_disconnected.connect(_on_player_disconnected)
+		NetworkManager.player_authenticated.connect(_on_player_authenticated)
 		print("✓ Server setup complete")
 	
-	# Connect spawner events (both server and client)
 	if spawner:
 		spawner.spawned.connect(_on_entity_spawned)
 		spawner.despawned.connect(_on_entity_despawned)
 		print("✓ Spawner connected")
-	else:
-		print("✗ ERROR: Spawner is null!")
 	
 	print("========================")
 
-## SERVER ONLY: Called when a peer connects
 func _on_player_connected(id: int) -> void:
 	print(">>> PEER CONNECTED: ", id)
-	print(">>> Spawning character for player ", id)
+	
+	if NetworkManager.authenticated_players.has(id):
+		print(">>> Already authenticated, spawning")
+		_spawn_player(id)
+	else:
+		print(">>> Not authenticated yet, waiting...")
+
+func _on_player_authenticated(id: int) -> void:
+	print(">>> PLAYER AUTHENTICATED: ", id)
+	# Spawn if not already spawned
 	_spawn_player(id)
 
-## SERVER ONLY: Called when a peer disconnects
 func _on_player_disconnected(id: int) -> void:
 	print(">>> PEER DISCONNECTED: ", id)
 	if players.has(id):
 		players[id].queue_free()
 		players.erase(id)
 
-## SERVER ONLY: Create and spawn character
 func _spawn_player(id: int) -> void:
 	if players.has(id):
-		print("!!! Player ", id, " already spawned, skipping")
 		return
 	
-	print(">>> Creating character instance for ", id)
+	print(">>> Creating character for ", id)
 	var character = character_scene.instantiate()
 	character.name = str(id)
 	character.player_id = id
+	character.global_position = Vector3(randf_range(-5, 5), 2, randf_range(-5, 5))
 	
-	# Spawn at random position
-	character.global_position = Vector3(
-		randf_range(-5, 5),
-		2,
-		randf_range(-5, 5)
-	)
-	
-	print(">>> Adding character to scene at ", character.global_position)
 	entities.add_child(character, true)
 	players[id] = character
-	print(">>> Character spawned! Total players: ", players.size())
+	print(">>> Spawned! Total: ", players.size())
 
-## BOTH: Called when any entity spawns via MultiplayerSpawner
 func _on_entity_spawned(node: Node) -> void:
-	print("*** Entity spawned: ", node.name, " (Type: ", node.get_class(), ")")
-	
 	if node is Character:
 		var character = node as Character
-		print("*** Character player_id: ", character.player_id)
-		print("*** My player_id: ", NetworkManager.player_id)
-		
-		# If this is OUR character, enable camera
 		if character.player_id == NetworkManager.player_id:
-			print("*** THIS IS MY CHARACTER! Enabling camera")
-			
+			print("*** MY CHARACTER!")
 
-## BOTH: Called when any entity despawns
 func _on_entity_despawned(node: Node) -> void:
-	print("*** Entity despawned: ", node.name)
+	print("*** Despawned: ", node.name)
