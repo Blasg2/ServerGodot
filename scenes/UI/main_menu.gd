@@ -3,32 +3,26 @@ extends Control
 @export var clientButton: Button
 @export var serverButton: Button
 
-var username: String
-var password: String
-
 func _ready():
 	serverButton.pressed.connect(_on_server_pressed)
 	clientButton.pressed.connect(_on_client_pressed)
-	
-	NetworkManager.login_successful.connect(_on_login_successful)
-	NetworkManager.login_failed.connect(_on_login_failed)
 
 func _on_server_pressed():
 	NetworkManager.start_server()
-	get_tree().change_scene_to_file("res://scenes/world/game_world.tscn")
+
+	var world = get_tree().current_scene
+	if world and world.has_method("start_host_game"):
+		world.start_host_game()
+
+	queue_free()
 
 func _on_client_pressed():
-	username = $User.text     
-	password = $Password.text  
-	
-	NetworkManager.connect_to_server()
-	await multiplayer.connected_to_server
-	print("Connected, sending login...")
-	NetworkManager.send_login(username, password)
+	var username = $User.text
+	var password = $Password.text
+	var address = "localhost" # TODO: replace with an Address LineEdit if you add one
 
-func _on_login_successful(account_data: Dictionary):
-	print("✓ Authenticated! NOW changing scene...")
-	get_tree().change_scene_to_file("res://scenes/world/game_world.tscn")
+	var world = get_tree().current_scene
+	if world and world.has_method("start_client_game"):
+		world.start_client_game(username, password, address)
 
-func _on_login_failed(reason: String):
-	print("❌ Login failed: ", reason)
+	queue_free()

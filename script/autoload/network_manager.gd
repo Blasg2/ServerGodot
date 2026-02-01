@@ -10,6 +10,10 @@ var peer := ENetMultiplayerPeer.new()
 var is_server: bool = false
 var player_id: int = -1
 
+## Pending login credentials (for scene change before connection)
+var pending_username: String = ""
+var pending_password: String = ""
+
 ## Authentication state (SERVER ONLY)
 var authenticated_players: Dictionary = {}
 
@@ -103,18 +107,23 @@ func _receive_login(username: String, password: String) -> void:
 	var sender_id = multiplayer.get_remote_sender_id()
 	print("\n=== LOGIN REQUEST ===")
 	print("From peer: ", sender_id)
+	print("Username: ", username)
 	
 	var account = Authentication.validate_login(username, password)
 	
 	if account.is_empty():
+		print("❌ Authentication failed for ", username)
 		rpc_id(sender_id, "_login_response", false, {}, "Invalid credentials")
 		return
 	
 	authenticated_players[sender_id] = account
-	print("✓ Stored in authenticated_players")
+	print("✓ Player authenticated: ", username, " (peer ", sender_id, ")")
+	print("Total authenticated players: ", authenticated_players.size())
+	print("=====================\n")
 	
 	rpc_id(sender_id, "_login_response", true, account, "")
-
+	
+	# DON'T emit here! Only emit from _client_ready_in_world
 ## CLIENT: Receive login response from server
 @rpc("authority", "reliable")
 func _login_response(success: bool, account_data: Dictionary, error_message: String) -> void:
