@@ -1,7 +1,2 @@
-res://scenes/world/game_world.tscn
-res://addons/_Godot-IDE_/IDE.gd
-res://script/game_world.gd
-res://scenes/UI/main_menu.tscn
-res://script/autoload/network_manager.gd
-res://scenes/UI/main_menu.gd
 res://scenes/world/level_1.tscn
+res://addons/_Godot-IDE_/IDE.gd

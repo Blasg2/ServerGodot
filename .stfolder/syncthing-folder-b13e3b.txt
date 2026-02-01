@@ -1,0 +1,5 @@
+# This directory is a Syncthing folder marker.
+# Do not delete.
+
+folderID: mmo
+created: 2026-02-01T04:23:41-03:00
