@@ -11,5 +11,4 @@ script = ExtResource("1_68lqe")
 [node name="MainMenu" parent="Levels" unique_id=1525409166 instance=ExtResource("2_68lqe")]
 
 [node name="LevelSpawn" type="MultiplayerSpawner" parent="." unique_id=390729210]
-_spawnable_scenes = PackedStringArray("uid://uaj1iyaf1711")
 spawn_path = NodePath("../Levels")

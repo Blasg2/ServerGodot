@@ -69,8 +69,8 @@ func _physics_process(delta: float) -> void:
 		_client_physics(delta)
 
 func _client_physics(delta: float) -> void:
-	var input_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var jump = Input.is_action_just_pressed("ui_accept")
+	var input_dir = Input.get_vector("left", "right", "up", "down")
+	var jump = Input.is_action_just_pressed("space")
 	
 	var move_direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
@@ -95,7 +95,7 @@ func _send_input_to_server(input_dir: Vector2, jump: bool) -> void:
 	var camera_rot_x = camera.global_rotation.x if camera else 0.0
 	var rotation_y = global_rotation.y
 	
-	rpc_id(1, "_receive_client_input", input_dir, jump, rotation_y, camera_rot_x, NetworkClock.tick)
+	rpc_id(1, "_receive_client_input", input_dir, jump, rotation_y, camera_rot_x, 0)
 
 @rpc("any_peer", "unreliable")
 func _receive_client_input(input_dir: Vector2, jump: bool, rotation_y: float, camera_rot_x: float, _client_tick: int) -> void:

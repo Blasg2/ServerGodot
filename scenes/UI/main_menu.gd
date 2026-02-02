@@ -1,28 +1,20 @@
+# res://scenes/UI/main_menu.gd
 extends Control
 
-@export var clientButton: Button
-@export var serverButton: Button
+@onready var world := $"../.."
 
-func _ready():
-	serverButton.pressed.connect(_on_server_pressed)
-	clientButton.pressed.connect(_on_client_pressed)
-
-func _on_server_pressed():
-	NetworkManager.start_server()
-
-	var world = get_tree().current_scene
-	if world and world.has_method("start_host_game"):
-		world.start_host_game()
-
-	queue_free()
-
-func _on_client_pressed():
+func _on_client_button_pressed():
+	# Get credentials from UI
 	var username = $User.text
 	var password = $Password.text
-	var address = "localhost" # TODO: replace with an Address LineEdit if you add one
+	var address = "localhost"
+	
+	# Tell game world to start client with these credentials
+	world.start_client_game(username, password, address)
+	
 
-	var world = get_tree().current_scene
-	if world and world.has_method("start_client_game"):
-		world.start_client_game(username, password, address)
+func _on_user_text_submitted(_new_text):
+	_on_client_button_pressed()
 
-	visible = false  # Hide instead of delete
+func _on_password_text_submitted(_new_text):
+	_on_client_button_pressed()

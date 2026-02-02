@@ -1,8 +1,10 @@
+MultiplayerSynchronizer
+AnimationPlayer
+LineEdit
+Label3D
 MultiplayerSpawner
 Node3D
-LineEdit
 Button
 CharacterBody3D
 Control
-MultiplayerSynchronizer
 Camera3D

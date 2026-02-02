@@ -26,6 +26,107 @@ properties/3/replication_mode = 2
 properties/4/path = NodePath("MeshInstance3D:mesh:radius")
 properties/4/spawn = true
 properties/4/replication_mode = 2
+properties/5/path = NodePath("Label3D:text")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath("Anime:current_animation")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_1bdar"]
+resource_name = "Chat"
+script/source = "extends Label3D
+@onready var line := $\"../LineEdit\"
+@onready var player := $\"..\"
+@onready var anime := $\"../Anime\"
+
+
+# On Label3D script
+func _process(_delta: float) -> void:
+	# Only process if this is my character
+	if not player.is_local_player:
+		return
+
+	if Input.is_action_just_pressed(\"enter\"):
+		if line.visible:
+			line.hide()
+			line.text = \"\"
+		else:
+			line.show()	
+			line.grab_focus()	
+
+
+func _on_line_edit_text_submitted(new_text: String) -> void:
+	text = new_text
+	if anime.is_playing():
+		anime.stop()
+		anime.play(\"RESET\")
+		
+	anime.play(\"flyText\")
+	line.hide()
+	line.text = \"\"
+"
+
+[sub_resource type="Animation" id="Animation_1bdar"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Label3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.3707445, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Label3D:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_e22cc"]
+resource_name = "flyText"
+length = 4.9
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Label3D:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.08, 2.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0.755, -0.623), Vector3(0, 0.755, -1.297)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Label3D:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.01, 4.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [false, true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2qjml"]
+_data = {
+&"RESET": SubResource("Animation_1bdar"),
+&"flyText": SubResource("Animation_e22cc")
+}
 
 [node name="Character" type="CharacterBody3D" unique_id=1000598693]
 script = ExtResource("1_cuyo6")
@@ -43,3 +144,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.731583, 0)
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1186219027]
 replication_interval = 0.016
 replication_config = SubResource("SceneReplicationConfig_x31xa")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1181955230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3707445, 0)
+visible = false
+billboard = 1
+text = "HELLO"
+script = SubResource("GDScript_1bdar")
+
+[node name="LineEdit" type="LineEdit" parent="." unique_id=1744069149]
+visible = false
+offset_left = 410.0
+offset_top = 368.0
+offset_right = 746.0
+offset_bottom = 426.0
+placeholder_text = "oi"
+
+[node name="Anime" type="AnimationPlayer" parent="." unique_id=281751030]
+libraries/ = SubResource("AnimationLibrary_2qjml")
+
+[connection signal="text_submitted" from="LineEdit" to="Label3D" method="_on_line_edit_text_submitted"]

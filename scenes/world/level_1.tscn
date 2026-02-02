@@ -27,6 +27,8 @@ size = Vector3(14.0357, 0.229823, 14.0357)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sl2e5"]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pq706"]
+
 [node name="level1" type="Node3D" unique_id=713751001]
 script = ExtResource("1_pq706")
 
@@ -68,3 +70,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4323015, 0)
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2037523810]
 _spawnable_scenes = PackedStringArray("uid://t04xmkgtd7i8")
 spawn_path = NodePath("../Entities")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=631313913]
+replication_interval = 0.016
+replication_config = SubResource("SceneReplicationConfig_pq706")
+visibility_update_mode = 2
+public_visibility = false

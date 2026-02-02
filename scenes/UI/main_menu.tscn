@@ -2,12 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cpw0t7v7wudj0" path="res://scenes/UI/main_menu.gd" id="1_qwnig"]
 
-[node name="Control" type="Control" unique_id=1525409166 node_paths=PackedStringArray("clientButton", "serverButton")]
+[node name="Control" type="Control" unique_id=1525409166]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_qwnig")
-clientButton = NodePath("ClientButton")
-serverButton = NodePath("ServerButton")
 
 [node name="ClientButton" type="Button" parent="." unique_id=2032819235]
 layout_mode = 0
@@ -16,14 +14,6 @@ offset_top = 124.0
 offset_right = 704.0
 offset_bottom = 215.0
 text = "client"
-
-[node name="ServerButton" type="Button" parent="." unique_id=1494444918]
-layout_mode = 0
-offset_left = 456.0
-offset_top = 332.0
-offset_right = 705.0
-offset_bottom = 427.0
-text = "server"
 
 [node name="User" type="LineEdit" parent="." unique_id=370504561]
 layout_mode = 0
@@ -38,3 +28,7 @@ offset_left = 493.0
 offset_top = 66.0
 offset_right = 664.0
 offset_bottom = 97.0
+
+[connection signal="pressed" from="ClientButton" to="." method="_on_client_button_pressed"]
+[connection signal="text_submitted" from="User" to="." method="_on_user_text_submitted"]
+[connection signal="text_submitted" from="Password" to="." method="_on_password_text_submitted"]
