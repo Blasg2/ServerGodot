@@ -6,7 +6,6 @@ extends Node
 @export var max_players: int = 99
 
 
-
 ## Network state
 var peer := ENetMultiplayerPeer.new()
 var player_id: int = -1
@@ -60,7 +59,6 @@ func connect_to_server(address: String = "localhost", port: int = default_port) 
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	
-	print("Connecting to ", address, ":", port)
 
 ## CLIENT: Send login credentials to server
 func send_login(username: String, password: String) -> void:
@@ -96,7 +94,7 @@ func _receive_login(username: String, password: String) -> void:
 @rpc("authority", "reliable")
 func _login_response(success: bool, account_data: Dictionary, error_message: String) -> void:
 	if success:
-		print("✓ Login successful!")
+		print("✓ Login successful! --message to player")
 		login_successful.emit(account_data)
 	else:
 		print("❌ Login failed: ", error_message)
@@ -128,7 +126,6 @@ func _on_player_disconnected(id: int) -> void:
 
 func _on_connected_to_server() -> void:
 	player_id = multiplayer.get_unique_id()
-	print("Connected to server! My peer ID: ", player_id)
 
 func _on_connection_failed() -> void:
 	print("Connection failed!")
@@ -136,6 +133,9 @@ func _on_connection_failed() -> void:
 func _on_server_disconnected() -> void:
 	print("Disconnected from server")
 	server_disconnected.emit()
+
+
+
 
 ## Utility
 func get_player_count() -> int:

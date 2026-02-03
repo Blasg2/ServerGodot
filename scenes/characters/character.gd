@@ -19,7 +19,7 @@ func _ready() -> void:
 	var cam = $Camera3D
 	if cam:
 		cam.current = false
-
+	
 func _process(_delta: float) -> void:
 	if _setup_done:
 		return
@@ -30,17 +30,18 @@ func _process(_delta: float) -> void:
 	
 	_setup_done = true
 	_do_setup()
-
+	
+	
 func _do_setup() -> void:
 	player_id = int(name)
 	var my_peer_id = multiplayer.get_unique_id()
 	is_local_player = (player_id == my_peer_id)
-	
-	print("=== CHARACTER SETUP [peer %d] ===" % my_peer_id)
-	print("player_id: ", player_id)
-	print("is_local_player: ", is_local_player)
-	print("is_server: ", multiplayer.is_server())
-	
+
+	if is_local_player:
+		print("=== CHARACTER SETUP [peer %d] ===" % my_peer_id)
+		print("player_id: ", player_id)
+		print("is_local_player: ", is_local_player)
+		
 	set_multiplayer_authority(player_id)
 	
 	camera = $Camera3D
@@ -50,16 +51,17 @@ func _do_setup() -> void:
 			camera.current = true
 			print("Activated my camera")
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+		
 	if multiplayer.is_server():
 		server_controller = ServerPhysicsController.new()
 		add_child(server_controller)
 		server_controller.initialize(self, player_id)
 		server_controller.set_stats({
-			"move_speed": 50.0,
+			"move_speed": 10.0,
 			"jump_velocity": 10.0,
 			"gravity": 21.0
 		})
+	
 
 func _physics_process(delta: float) -> void:
 	if not _setup_done:
