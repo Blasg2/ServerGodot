@@ -23,7 +23,7 @@ func _process(_delta: float) -> void:
 	# Only process if this is my character
 	if not player.is_local_player:
 		return
-
+		
 	if Input.is_action_just_pressed(\"enter\"):
 		if line.visible:
 			line.hide()
@@ -128,17 +128,7 @@ properties/6/path = NodePath("Anime:current_animation")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[sub_resource type="GDScript" id="GDScript_e22cc"]
-resource_name = "FilterTest"
-script/source = "extends MultiplayerSynchronizer
-
-#@onready var levelManager = get_parent().get_parent().get_parent()
-#func _ready():
-	#levelManager.thingsToSync.append(self)
-#func _exit_tree():
-##	levelManager.thingsToSync.remove(self)
-	#pass
-"
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_e22cc"]
 
 [node name="Character" type="CharacterBody3D" unique_id=1000598693]
 script = ExtResource("1_cuyo6")
@@ -174,6 +164,11 @@ libraries/ = SubResource("AnimationLibrary_2qjml")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1436057397]
 replication_interval = 0.016
 replication_config = SubResource("SceneReplicationConfig_1bdar")
-script = SubResource("GDScript_e22cc")
+
+[node name="ServerSync" type="MultiplayerSynchronizer" parent="." unique_id=165303934]
+replication_interval = 0.016
+replication_config = SubResource("SceneReplicationConfig_e22cc")
+visibility_update_mode = 2
+public_visibility = false
 
 [connection signal="text_submitted" from="LineEdit" to="Label3D" method="_on_line_edit_text_submitted"]

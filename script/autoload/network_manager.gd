@@ -5,7 +5,6 @@ extends Node
 @export var default_port: int = 7777
 @export var max_players: int = 99
 
-
 ## Network state
 var peer := ENetMultiplayerPeer.new()
 var player_id: int = -1
@@ -49,9 +48,10 @@ func start_server(port: int = default_port) -> void:
 	multiplayer.peer_connected.connect(_on_player_connected)
 	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 	print("Server started on port ", port)
+	
 
 ## Connect to server
-func connect_to_server(address: String = "localhost", port: int = default_port) -> void:
+func connect_to_server(address: String = "201.17.248.223", port: int = default_port) -> void:
 	peer.create_client(address, port)
 	multiplayer.multiplayer_peer = peer
 	
@@ -102,11 +102,9 @@ func _login_response(success: bool, account_data: Dictionary, error_message: Str
 
 ## Get account data for a peer (SERVER ONLY)
 func get_account_data(peer_id: int) -> Dictionary:
-	if not multiplayer.is_server():
-		push_warning("get_account_data called on client!")
-		return {}
-	
-	return authenticated_players.get(peer_id, {})
+	if multiplayer.is_server():
+		return authenticated_players.get(peer_id, {})
+	return {}
 
 ## Network event handlers
 func _on_player_connected(id: int) -> void:
@@ -121,8 +119,7 @@ func _on_player_disconnected(id: int) -> void:
 		authenticated_players.erase(id)
 		online_usernames.erase(username)
 		print("Removed ", username, " from authenticated players")
-	
-	unspawn_player.emit(id)
+		unspawn_player.emit(id, username)
 
 func _on_connected_to_server() -> void:
 	player_id = multiplayer.get_unique_id()
@@ -137,6 +134,6 @@ func _on_server_disconnected() -> void:
 
 
 
-## Utility
+## Utility  -may be wrong?
 func get_player_count() -> int:
 	return multiplayer.get_peers().size() + (1 if multiplayer.is_server() else 0)

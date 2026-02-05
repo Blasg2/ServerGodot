@@ -13,7 +13,14 @@ const CLIENT_GRAVITY: float = 21.0
 @export var mouse_sensitivity: float = 0.002
 @export var username: String = ""
 
-
+@onready var serverSync = $ServerSync
+#
+func _enter_tree() -> void:
+	# Only set authority if name is valid peer id
+	if name.is_valid_int():
+		var id = int(name)
+		$MultiplayerSynchronizer.set_multiplayer_authority(id)
+		#
 func _ready() -> void:
 	# Disable camera immediately
 	var cam = $Camera3D
@@ -42,7 +49,8 @@ func _do_setup() -> void:
 		print("player_id: ", player_id)
 		print("is_local_player: ", is_local_player)
 		
-	set_multiplayer_authority(player_id)
+	
+	#$MultiplayerSynchronizer.set_multiplayer_authority(player_id)
 	
 	camera = $Camera3D
 	

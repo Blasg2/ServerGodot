@@ -5,12 +5,13 @@ extends Node3D
 @onready var level_spawner: MultiplayerSpawner = $LevelSpawn
 @onready var menu := $Levels/MainMenu
 @onready var database := "res://data/game_data.db"
+@onready var Players := $Players
+@onready var Things := $Things
+
+var character_scene: PackedScene = load("res://scenes/characters/character.tscn")
 
 var loadedLevels = {}
-
-var character_scene: PackedScene = load("uid://t04xmkgtd7i8")
-var level1: PackedScene = load("uid://uaj1iyaf1711")
-
+var allLevels := ["res://scenes/world/level_1.tscn"]
 
 func _ready() -> void:	
 	# Connect network signals
@@ -18,28 +19,19 @@ func _ready() -> void:
 	# Watch for level spawns
 	level_spawner.despawned.connect(_on_level_despawned)
 	
-	# Load level list on ALL peers so they all know what's spawnable
-	var sql = SQLite.new()
-	sql.path = database
-	sql.verbosity_level = SQLite.QUIET  
-	sql.open_db()
-	var allLevels = sql.select_rows("levels", "", ["name", "path"])
-	sql.close_db()
-	for l in allLevels:
-		level_spawner.add_spawnable_scene(l["path"])
 
 # Only server actually instances/adds the levels
 	var args := OS.get_cmdline_args()
 	if "--server" in args:
 		NetworkManager.start_server()
 
-		for l in allLevels:
-			var ps: PackedScene = load(l["path"])
-			var lv: Node3D = ps.instantiate()
-			lv.name = l["name"]
+		for c in allLevels:
+			var ps:PackedScene = load(c)
+			var lv := ps.instantiate()
+			#lv.name = l["name"]
 			#lv.process_mode = Node.PROCESS_MODE_DISABLED
 			levels.add_child(lv)
-			loadedLevels[l["name"]] = lv
+			loadedLevels[lv.name] = lv
 	
 	
 ## Called by MainMenu - Join as client
@@ -84,16 +76,75 @@ func _on_level_despawned(node: Node) -> void:
 	pass ## later addlogic here to despawn levels. NOTE NOTE NOTE NOTE
 
 
+
+
+##SPAWN ON LEVEL
 func _on_player_authenticated(id: int) -> void:
 	if multiplayer.is_server():
+		var username = NetworkManager.get_account_data(id)["username"]
 		var sql = SQLite.new()
 		sql.path = database
+		sql.verbosity_level = SQLite.QUIET
 		sql.open_db()
-		##THIGS HERE NOTE NOTE NOTE NOTE
+		var rows = sql.select_rows("charStats","Username = '%s'" % username,["CurrentLevel"]) 
+		var level = str(rows[0]["CurrentLevel"])
 		sql.close_db()
 		
-		loadedLevels["level1"].MpSync.set_visibility_for(id,true)
+		loadedLevels[level].MpSync.set_visibility_for(id,true)
 		
 @rpc("any_peer", "reliable")
-func server_level_ready_ack(levelName: String)->void:
-	loadedLevels[levelName].spawn_player(multiplayer.get_remote_sender_id(), character_scene)
+func server_level_ready_ack(levelName: String) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var id := multiplayer.get_remote_sender_id()
+
+	# --- build server-side character node (server copy) ---
+	var character = character_scene.instantiate()
+	character.name = str(id)
+	character.player_id = id
+	character.set_meta("level", levelName)
+
+	var account = NetworkManager.get_account_data(id)
+	character.username = account.get("username", "")
+	#character.get_node("MultiplayerSynchronizer").set_multiplayer_authority(id, true)
+
+	Players.add_child(character, true)
+
+
+	# --- SQL load position ---
+	var username = account.get("username", "")
+	var pos := Vector3.ZERO
+
+	var sql = SQLite.new()
+	sql.path = database
+	sql.open_db()
+	sql.query_with_bindings(
+		"SELECT X, Y, Z FROM charStats WHERE Username = ? LIMIT 1;",
+		[username]
+	)
+	if sql.query_result.size() > 0:
+		var r = sql.query_result[0]
+		pos = Vector3(float(r["X"]), float(r["Y"]), float(r["Z"]))
+	sql.close_db()
+	
+	character.global_position = pos
+
+	$Controls.show()
+	for c in Players.get_children():
+		c.serverSync.set_visibility_for(id,true)
+
+	#await get_tree().create_timer(3).timeout
+	#var bol = load("res://bola.tscn")
+	#var bola = bol.instantiate()
+	#bola.global_position = Vector3(0,0,0)
+	#Things.add_child(bola, true)
+
+	loadedLevels[levelName].players[id] = character
+
+
+func _on_things_child_entered_tree(node: Node) -> void:
+	if multiplayer.is_server():
+		for c in multiplayer.get_peers():
+			node.get_node("MultiplayerSynchronizer").set_visibility_for(c,true)
+			

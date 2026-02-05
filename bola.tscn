@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://bglk5h03u4avr"]
+
+[sub_resource type="GDScript" id="GDScript_0k4q1"]
+resource_name = "v"
+script/source = "extends Node3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	global_position += Vector3(0.3,0,0) * delta
+"
+
+[sub_resource type="SphereMesh" id="SphereMesh_0k4q1"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0k4q1"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_4rhad"]
+colors = PackedColorArray(0, 0.498039, 0, 1, 0.31, 1, 0.3215, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dphjl"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0k4q1"]
+width = 2048
+height = 2048
+noise = SubResource("FastNoiseLite_dphjl")
+color_ramp = SubResource("Gradient_4rhad")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1fp7r"]
+albedo_texture = SubResource("NoiseTexture2D_0k4q1")
+
+[sub_resource type="BoxMesh" id="BoxMesh_c0eli"]
+material = SubResource("StandardMaterial3D_1fp7r")
+size = Vector3(14.0357, 0.229823, 14.0357)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6ycda"]
+size = Vector3(14.0357, 0.229823, 14.0357)
+
+[node name="Bola" type="Node3D" unique_id=1011462569]
+script = SubResource("GDScript_0k4q1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=812938292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.80357456, 0)
+mesh = SubResource("SphereMesh_0k4q1")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=259053726]
+replication_interval = 0.016
+replication_config = SubResource("SceneReplicationConfig_0k4q1")
+visibility_update_mode = 2
+public_visibility = false
+
+[node name="GroundStaticBody" type="StaticBody3D" parent="." unique_id=674037426]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.33122933, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GroundStaticBody" unique_id=211887372]
+mesh = SubResource("BoxMesh_c0eli")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundStaticBody" unique_id=324650582]
+shape = SubResource("BoxShape3D_6ycda")
