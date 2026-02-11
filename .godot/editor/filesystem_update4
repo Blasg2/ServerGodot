@@ -1,7 +1,4 @@
-res://scenes/UI/main_menu.tscn
+res://scenes/world/level_1.tscn
 res://addons/_Godot-IDE_/IDE.gd
-res://scenes/world/game_world.tscn
-res://script/game_world.gd
-res://script/level_manager.gd
-res://scenes/characters/character.tscn
 res://scenes/characters/character.gd
+res://script/serverOnly/server_physics_controller.gd

@@ -4,26 +4,26 @@ extends Node3D
 @onready var Game_world := get_node("/root/World")
 @onready var MpSync = $MultiplayerSynchronizer
 
-var character_scene: PackedScene = preload("res://scenes/characters/character.tscn")
-
-
-var players: Dictionary = {}
+var playersOnLevel: Dictionary = {}
 
 
 func _ready() -> void:
-	# Connect spawner signals
 	if not multiplayer.is_server():
-		Game_world.rpc_id(1, "server_level_ready_ack", self.name)
-
+		Game_world.rpc_id(1, "client_level_ready", self.name)
 	NetworkManager.unspawn_player.connect(remove_player)
-	print("[LevelManager] Ready: ", name)
-
+	
+	
+	#if not multiplayer.is_server():
+		#Game_world.level_spawner.clear_spawnable_scenes()
+		#for c in Game_world.allLevels:
+			#Game_world.level_spawner.add_spawnable_scene(c)
 
 ## Server: Remove player from this level
 func remove_player(id: int, username: String) -> void:
-	if players.has(id):
+	if playersOnLevel.has(id):
 		print("[LevelManager] Removing player ", id)
-		var p = players[id].global_position
+		var body = playersOnLevel[id].get_node("Body")
+		var p = body.global_position
 		var sql = SQLite.new()
 		sql.path = "res://data/game_data.db"
 		sql.open_db()
@@ -33,5 +33,6 @@ func remove_player(id: int, username: String) -> void:
 		)
 		sql.close_db()
 		
-		players[id].queue_free()
-		players.erase(id)
+		playersOnLevel[id].queue_free()
+		playersOnLevel.erase(id)
+		

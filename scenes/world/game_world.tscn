@@ -2,17 +2,14 @@
 
 [ext_resource type="Script" uid="uid://c6ro83vyui5jx" path="res://script/game_world.gd" id="1_68lqe"]
 [ext_resource type="PackedScene" uid="uid://cfctv3chhos41" path="res://scenes/UI/main_menu.tscn" id="2_68lqe"]
-[ext_resource type="Script" uid="uid://dcoumyf6bwig4" path="res://addons/touch_joystick/joystick.gd" id="3_v3oj8"]
 
 [node name="World" type="Node3D" unique_id=845816272]
 script = ExtResource("1_68lqe")
 
 [node name="LevelSpawn" type="MultiplayerSpawner" parent="." unique_id=390729210]
-_spawnable_scenes = PackedStringArray("uid://uaj1iyaf1711")
 spawn_path = NodePath("../Levels")
 
 [node name="ThingSpawn" type="MultiplayerSpawner" parent="." unique_id=1432964961]
-_spawnable_scenes = PackedStringArray("uid://bglk5h03u4avr")
 spawn_path = NodePath("../Things")
 
 [node name="Levels" type="Node3D" parent="." unique_id=891404220]
@@ -22,27 +19,6 @@ spawn_path = NodePath("../Things")
 [node name="Players" type="Node3D" parent="." unique_id=65355738]
 
 [node name="Things" type="Node3D" parent="." unique_id=87118565]
-
-[node name="Controls" type="CanvasLayer" parent="." unique_id=1000798871]
-visible = false
-
-[node name="TouchScreenJoystick" type="Node2D" parent="Controls" unique_id=1419420394]
-position = Vector2(177, 434)
-script = ExtResource("3_v3oj8")
-size = 60.82
-left = &"left"
-right = &"right"
-up = &"up"
-down = &"down"
-metadata/_custom_type_script = "uid://dcoumyf6bwig4"
-
-[node name="TouchScreenJoystick2" type="Node2D" parent="Controls" unique_id=1810779001]
-position = Vector2(958, 444)
-script = ExtResource("3_v3oj8")
-size = 58.81
-metadata/_custom_type_script = "uid://dcoumyf6bwig4"
-
-[node name="TouchScreenButton" type="TouchScreenButton" parent="Controls" unique_id=45459546]
 
 [node name="PlayerSpawn" type="MultiplayerSpawner" parent="." unique_id=1370389932]
 _spawnable_scenes = PackedStringArray("uid://t04xmkgtd7i8")

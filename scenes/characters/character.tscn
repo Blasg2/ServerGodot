@@ -2,6 +2,35 @@
 
 [ext_resource type="Script" uid="uid://dg8ssli0c2ea3" path="res://scenes/characters/character.gd" id="1_cuyo6"]
 [ext_resource type="Script" uid="uid://c44jonyuvxs1o" path="res://scenes/characters/mesh_changer.gd" id="2_1bdar"]
+[ext_resource type="Texture2D" uid="uid://brfrp6r0fiwl2" path="res://addons/_Godot-IDE_/icon.svg" id="4_yscb1"]
+[ext_resource type="Script" uid="uid://cyp7lcjljfayh" path="res://scenes/characters/npc.gd" id="5_oqd6d"]
+[ext_resource type="Texture2D" uid="uid://uuvp8vci7n1f" path="res://Arte/crosshair005.png" id="5_ysl2u"]
+[ext_resource type="Script" uid="uid://co0lo02vnu10n" path="res://addons/font_auto_size_labels/auto_size_rich_text_label.gd" id="6_yscb1"]
+[ext_resource type="Script" uid="uid://opibxdgkobgf" path="res://addons/virtual_joystick_plus/virtual_joystick_plus.gd" id="7_03c51"]
+[ext_resource type="Texture2D" uid="uid://bri57jn1rjtmq" path="res://addons/virtual_joystick_plus/resources/textures/joystick_texture_5.png" id="8_8gmw8"]
+[ext_resource type="Texture2D" uid="uid://cukut32rata37" path="res://addons/virtual_joystick_plus/resources/textures/stick_texture_5.png" id="9_3mlnx"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_server"]
+properties/0/path = NodePath("Body/MeshInstance3D:mesh:radius")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath("Label3D:text")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath("Body:position")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_state"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:global_rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nxwtt"]
 radius = 0.3
@@ -10,165 +39,183 @@ radius = 0.3
 resource_local_to_scene = true
 radius = 0.3
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1bdar"]
+radius = 0.1
+
 [sub_resource type="GDScript" id="GDScript_1bdar"]
 resource_name = "Chat"
 script/source = "extends Label3D
-@onready var line := $\"../LineEdit\"
-@onready var player := $\"..\"
-@onready var anime := $\"../Anime\"
-
-
-# On Label3D script
-func _process(_delta: float) -> void:
-	# Only process if this is my character
-	if not player.is_local_player:
-		return
-		
-	if Input.is_action_just_pressed(\"enter\"):
-		if line.visible:
-			line.hide()
-			line.text = \"\"
-		else:
-			line.show()	
-			line.grab_focus()	
-
-
-func _on_line_edit_text_submitted(new_text: String) -> void:
-	text = new_text
-	if anime.is_playing():
-		anime.stop()
-		anime.play(\"RESET\")
-		
-	anime.play(\"flyText\")
-	line.hide()
-	line.text = \"\"
+#@onready var line := $\"../Body/LineEdit\"
+#@onready var player := $\"../Body\"
+#@onready var anime := $\"../Body/Anime\"
+#
+#func _process(_delta: float) -> void:
+	#if not player.is_local_player:
+		#return
+	#if Input.is_action_just_pressed(\"enter\"):
+		#if line.visible:
+			#line.hide()
+			#line.text = \"\"
+		#else:
+			#line.show()
+			#line.grab_focus()
+#
+#func _on_line_edit_text_submitted(new_text: String) -> void:
+	#text = new_text
+	#if anime.is_playing():
+		#anime.stop()
+		#anime.play(\"RESET\")
+	#anime.play(\"flyText\")
+	#line.hide()
+	#line.text = \"\"
 "
 
-[sub_resource type="Animation" id="Animation_1bdar"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Label3D:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 1.3707445, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Label3D:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
+[node name="Character" type="Node3D" unique_id=824878166]
 
-[sub_resource type="Animation" id="Animation_e22cc"]
-resource_name = "flyText"
-length = 4.9
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Label3D:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0.08, 2.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0, 0.755, -0.623), Vector3(0, 0.755, -1.297)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Label3D:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.01, 4.6),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [false, true, false]
-}
+[node name="ServerSync" type="MultiplayerSynchronizer" parent="." unique_id=1509106485]
+replication_config = SubResource("SceneReplicationConfig_server")
+visibility_update_mode = 2
+public_visibility = false
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_2qjml"]
-_data = {
-&"RESET": SubResource("Animation_1bdar"),
-&"flyText": SubResource("Animation_e22cc")
-}
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1bdar"]
-properties/0/path = NodePath(".:global_rotation")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:global_position")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:velocity")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath(".:username")
-properties/3/spawn = true
-properties/3/replication_mode = 2
-properties/4/path = NodePath("MeshInstance3D:mesh:radius")
-properties/4/spawn = true
-properties/4/replication_mode = 2
-properties/5/path = NodePath("Label3D:text")
-properties/5/spawn = true
-properties/5/replication_mode = 1
-properties/6/path = NodePath("Anime:current_animation")
-properties/6/spawn = true
-properties/6/replication_mode = 1
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_e22cc"]
-
-[node name="Character" type="CharacterBody3D" unique_id=1000598693]
+[node name="Body" type="CharacterBody3D" parent="." unique_id=535544243]
 script = ExtResource("1_cuyo6")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1086468894]
+[node name="StateSync" type="MultiplayerSynchronizer" parent="Body" unique_id=1888307535]
+replication_interval = 0.016
+replication_config = SubResource("SceneReplicationConfig_state")
+public_visibility = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body" unique_id=845428038]
 shape = SubResource("CapsuleShape3D_nxwtt")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1674884962]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Body" unique_id=1453356871]
 mesh = SubResource("CapsuleMesh_6nn2t")
 script = ExtResource("2_1bdar")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=2101673363]
+[node name="Camera3D" type="Camera3D" parent="Body" unique_id=861208362]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.731583, 0)
 
-[node name="Label3D" type="Label3D" parent="." unique_id=1181955230]
+[node name="RayCast3D" type="RayCast3D" parent="Body/Camera3D" unique_id=1168259822]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+target_position = Vector3(0, -2.925, 0)
+collision_mask = 524288
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Body" unique_id=1980988900]
+transform = Transform3D(0.21211635, 0, 0, 0, -9.2719e-09, 0.21211635, 0, -0.21211635, -9.2719e-09, 0, 0.3390543, -0.4916071)
+mesh = SubResource("CapsuleMesh_1bdar")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=541802509]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3707445, 0)
 visible = false
 billboard = 1
 text = "HELLO"
 script = SubResource("GDScript_1bdar")
 
-[node name="LineEdit" type="LineEdit" parent="." unique_id=1744069149]
+[node name="Controls" type="CanvasLayer" parent="." unique_id=1159281610]
 visible = false
-offset_left = 410.0
-offset_top = 368.0
-offset_right = 746.0
-offset_bottom = 426.0
-placeholder_text = "oi"
+follow_viewport_enabled = true
 
-[node name="Anime" type="AnimationPlayer" parent="." unique_id=281751030]
-libraries/ = SubResource("AnimationLibrary_2qjml")
+[node name="LineEdit" type="LineEdit" parent="Controls" unique_id=1132228929]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -183.0
+offset_top = -167.0
+offset_right = 183.0
+offset_bottom = -128.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_oqd6d")
+metadata/_edit_use_anchors_ = true
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1436057397]
-replication_interval = 0.016
-replication_config = SubResource("SceneReplicationConfig_1bdar")
+[node name="Cross" type="TextureRect" parent="Controls" unique_id=1359635108]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_top = -39.0
+offset_right = 89.0
+offset_bottom = 89.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.605, 0.605)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("5_ysl2u")
+metadata/_edit_use_anchors_ = true
 
-[node name="ServerSync" type="MultiplayerSynchronizer" parent="." unique_id=165303934]
-replication_interval = 0.016
-replication_config = SubResource("SceneReplicationConfig_e22cc")
-visibility_update_mode = 2
-public_visibility = false
+[node name="AutoSizeRichTextLabel" type="RichTextLabel" parent="Controls" unique_id=2146267395]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -247.0
+offset_top = 78.0
+offset_right = 247.0
+offset_bottom = 194.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 25
+scroll_active = false
+script = ExtResource("6_yscb1")
+_max_size = 25
+_current_font_size = 25
+_editor_defaults_set = true
+metadata/_custom_type_script = "uid://co0lo02vnu10n"
 
-[connection signal="text_submitted" from="LineEdit" to="Label3D" method="_on_line_edit_text_submitted"]
+[node name="ButtonAnchor" type="Control" parent="Controls" unique_id=741215971]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Controls/ButtonAnchor" unique_id=387818913]
+position = Vector2(-136, 47.000004)
+scale = Vector2(0.6328125, 0.54687494)
+texture_normal = ExtResource("4_yscb1")
+action = "tab"
+
+[node name="left_stick" type="Control" parent="Controls" unique_id=667082010]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -300.0
+offset_right = 300.0
+grow_vertical = 0
+scale = Vector2(0.621029, 0.61013097)
+pivot_offset = Vector2(150, 150)
+script = ExtResource("7_03c51")
+joystick_texture = ExtResource("8_8gmw8")
+stick_texture = ExtResource("9_3mlnx")
+metadata/_custom_type_script = "uid://opibxdgkobgf"
+
+[node name="right_joystick" type="Control" parent="Controls" unique_id=1702147466]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(0.621029, 0.61013097)
+pivot_offset = Vector2(150, 150)
+script = ExtResource("7_03c51")
+joystick_texture = ExtResource("8_8gmw8")
+stick_texture = ExtResource("9_3mlnx")
+metadata/_custom_type_script = "uid://opibxdgkobgf"
+
+[connection signal="text_submitted" from="Controls/LineEdit" to="Controls/LineEdit" method="_on_text_submitted"]
+[connection signal="analogic_changed" from="Controls/left_stick" to="Body" method="_on_left_stick_analogic_changed"]
+[connection signal="analogic_changed" from="Controls/right_joystick" to="Body" method="_on_right_joystick_analogic_changed"]

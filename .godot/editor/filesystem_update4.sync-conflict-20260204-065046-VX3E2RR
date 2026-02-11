@@ -1,9 +1,0 @@
-res://scenes/world/game_world.tscn
-res://addons/_Godot-IDE_/IDE.gd
-res://script/game_world.gd
-res://script/level_manager.gd
-res://script/autoload/network_manager.gd
-res://script/serverOnly/authentication.gd
-res://scenes/world/level_1.tscn
-res://scenes/characters/character.gd
-res://scenes/characters/character.tscn

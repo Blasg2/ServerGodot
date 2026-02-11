@@ -7,7 +7,7 @@ func _on_client_button_pressed():
 	# Get credentials from UI
 	var username = $User.text
 	var password = $Password.text
-	var address = "localhost"
+	var address = "201.17.248.223"
 	
 	# Tell game world to start client with these credentials
 	world.start_client_game(username, password, address)

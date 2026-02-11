@@ -11,27 +11,28 @@ extends Node3D
 var character_scene: PackedScene = load("res://scenes/characters/character.tscn")
 
 var loadedLevels = {}
-var allLevels := ["res://scenes/world/level_1.tscn"]
+var allLevels := ["res://scenes/world/level_1.tscn", "res://bola.tscn"]
 
-func _ready() -> void:	
-	# Connect network signals
+var pending_level_changes: Dictionary = {}
+
+func _ready() -> void:
 	NetworkManager.player_authenticated.connect(_on_player_authenticated)
-	# Watch for level spawns
-	level_spawner.despawned.connect(_on_level_despawned)
-	
+	level_spawner.spawn_function = Callable(self, "spawn_level")
 
 # Only server actually instances/adds the levels
 	var args := OS.get_cmdline_args()
 	if "--server" in args:
 		NetworkManager.start_server()
-
 		for c in allLevels:
-			var ps:PackedScene = load(c)
-			var lv := ps.instantiate()
-			#lv.name = l["name"]
-			#lv.process_mode = Node.PROCESS_MODE_DISABLED
-			levels.add_child(lv)
+			level_spawner.spawn(c)
+		for lv in levels.get_children():
 			loadedLevels[lv.name] = lv
+			##lv.process_mode = Node.PROCESS_MODE_DISABLED
+
+func spawn_level(data: Variant)->Node:
+	var ps: PackedScene = load(data)
+	var lv = ps.instantiate()
+	return lv
 	
 	
 ## Called by MainMenu - Join as client
@@ -72,79 +73,175 @@ func _on_login_fail(reason: String) -> void:
 		multiplayer.multiplayer_peer = null
 
 	
-func _on_level_despawned(node: Node) -> void:
-	pass ## later addlogic here to despawn levels. NOTE NOTE NOTE NOTE
 
 
-
-
-##SPAWN ON LEVEL
 func _on_player_authenticated(id: int) -> void:
-	if multiplayer.is_server():
-		var username = NetworkManager.get_account_data(id)["username"]
-		var sql = SQLite.new()
-		sql.path = database
-		sql.verbosity_level = SQLite.QUIET
-		sql.open_db()
-		var rows = sql.select_rows("charStats","Username = '%s'" % username,["CurrentLevel"]) 
-		var level = str(rows[0]["CurrentLevel"])
-		sql.close_db()
-		
-		loadedLevels[level].MpSync.set_visibility_for(id,true)
-		
-@rpc("any_peer", "reliable")
-func server_level_ready_ack(levelName: String) -> void:
 	if not multiplayer.is_server():
 		return
+	var username = NetworkManager.get_account_data(id)["username"]
+	var sql = SQLite.new()
+	sql.path = database
+	sql.verbosity_level = SQLite.QUIET
+	sql.open_db()
+	var rows = sql.select_rows("charStats", "Username = '%s'" % username, ["CurrentLevel"])
+	var level = str(rows[0]["CurrentLevel"])
+	sql.close_db()
+	loadedLevels[level].MpSync.set_visibility_for(id, true)
 
-	var id := multiplayer.get_remote_sender_id()
+func _spawn_new_player(id: int, levelName: String) -> void:
+	var account = NetworkManager.get_account_data(id)
+	var username = account.get("username", "")
 
-	# --- build server-side character node (server copy) ---
+	# Create character
 	var character = character_scene.instantiate()
 	character.name = str(id)
-	character.player_id = id
 	character.set_meta("level", levelName)
 
-	var account = NetworkManager.get_account_data(id)
-	character.username = account.get("username", "")
-	#character.get_node("MultiplayerSynchronizer").set_multiplayer_authority(id, true)
-
+	var body = character.get_node("Body")
+	body.username = username
+	
 	Players.add_child(character, true)
 
-
-	# --- SQL load position ---
-	var username = account.get("username", "")
-	var pos := Vector3.ZERO
-
+	# Load position from DB
 	var sql = SQLite.new()
 	sql.path = database
 	sql.open_db()
-	sql.query_with_bindings(
-		"SELECT X, Y, Z FROM charStats WHERE Username = ? LIMIT 1;",
-		[username]
-	)
+	sql.query_with_bindings("SELECT X, Y, Z FROM charStats WHERE Username = ? LIMIT 1;", [username])
 	if sql.query_result.size() > 0:
 		var r = sql.query_result[0]
-		pos = Vector3(float(r["X"]), float(r["Y"]), float(r["Z"]))
+		body.global_position = Vector3(float(r["X"]), float(r["Y"]), float(r["Z"]))
 	sql.close_db()
 	
-	character.global_position = pos
+	loadedLevels[levelName].playersOnLevel[id] = character
+	_setup_visibility(id, character, levelName, true)
 
-	$Controls.show()
+@rpc("any_peer", "reliable")
+func change_player_level(player_id: int, to_level: String) -> void:
+	var character = Players.get_node_or_null(str(player_id))
+	if not character:
+		return
+	var from_level = character.get_meta("level")
+	if from_level == to_level:
+		return
+	
+	var old_peers = _get_peers_on_level(from_level, player_id)
+	var body = character.get_node("Body")
+	
+	# Freeze character during transition
+	body.set_physics_process(false)
+	body.velocity = Vector3.ZERO
+	#body.global_position = spawn_pos
+	
+	# Remove from old level
+	_setup_visibility(player_id, character, from_level, false)
+	loadedLevels[from_level].MpSync.set_visibility_for(player_id, false)
+	loadedLevels[from_level].playersOnLevel.erase(player_id)
+	
+	# Store pending - wait for handshake to complete
+	pending_level_changes[player_id] = {
+		"to_level": to_level,
+		"old_peers": old_peers
+	}
+	
+	# Show new level (client starts loading)
+	character.set_meta("level", to_level)
+	loadedLevels[to_level].MpSync.set_visibility_for(player_id, true)
+
+
+@rpc("any_peer", "reliable")
+func client_level_ready(levelName: String) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	var id := multiplayer.get_remote_sender_id()
+	
+	if pending_level_changes.has(id):
+		var pending = pending_level_changes[id]
+		if pending.to_level == levelName:
+			_complete_level_change(id, pending)
+			pending_level_changes.erase(id)
+			return
+	
+	# Initial spawn
+	_spawn_new_player(id, levelName)
+
+
+func _complete_level_change(player_id: int, pending: Dictionary) -> void:
+	var character = Players.get_node_or_null(str(player_id))
+	if not character:
+		return
+	
+	var body = character.get_node("Body")
+	
+	# Unfreeze
+	body.set_physics_process(true)
+	
+	# Set up visibility
+	loadedLevels[pending.to_level].playersOnLevel[player_id] = character
+	_setup_visibility(player_id, character, pending.to_level, true, pending.old_peers)
+
+
+func _setup_visibility(player_id: int, character: Node3D, levelName: String, Isvisible: bool, old_peers: Array[int] = []) -> void:
+	var server_sync = character.get_node("ServerSync")
+	var peers = _get_peers_on_level(levelName, player_id)
+	
+	if Isvisible:
+		server_sync.set_visibility_for(1, true)
+		server_sync.set_visibility_for(player_id, true)
+	
+	for peer_id in peers:
+		server_sync.set_visibility_for(peer_id, Isvisible)
+		Players.get_node(str(peer_id)).get_node("ServerSync").set_visibility_for(player_id, Isvisible)
+		_update_statesync.rpc_id(peer_id, player_id, Isvisible)
+	
+	if Isvisible:
+		_set_statesync_peers.rpc_id(player_id, peers, old_peers)
+
+
+func _get_peers_on_level(levelName: String, exclude_id: int = -1) -> Array[int]:
+	var peers: Array[int] = []
 	for c in Players.get_children():
-		c.serverSync.set_visibility_for(id,true)
+		var id = int(c.name)
+		if id != exclude_id and c.get_meta("level") == levelName:
+			peers.append(id)
+	return peers
 
+
+@rpc("authority", "reliable")
+func _update_statesync(peer_id: int, Isvisible: bool) -> void:
+	for c in Players.get_children():
+		var body = c.get_node("Body")
+		if body.get_multiplayer_authority() == multiplayer.get_unique_id():
+			body.get_node("StateSync").set_visibility_for(peer_id, Isvisible)
+
+
+@rpc("authority", "reliable")
+func _set_statesync_peers(peer_ids: Array, old_peer_ids: Array = []) -> void:
+	for c in Players.get_children():
+		var body = c.get_node("Body")
+		if body.get_multiplayer_authority() == multiplayer.get_unique_id():
+			body.get_node("StateSync").set_visibility_for(1, true)
+			
+			# Remove old peers
+			for peer_id in old_peer_ids:
+				body.get_node("StateSync").set_visibility_for(peer_id, false)
+			
+			# Add new peers
+			for peer_id in peer_ids:
+				body.get_node("StateSync").set_visibility_for(peer_id, true)
+
+
+
+##THIS nedds CHANGE NOTE NOTE NOTE
+func _on_things_child_entered_tree(node: Node) -> void:
+	if multiplayer.is_server():
+		for c in multiplayer.get_peers():
+			node.get_node("MultiplayerSynchronizer").set_visibility_for(c, true)
+
+
+			
 	#await get_tree().create_timer(3).timeout
 	#var bol = load("res://bola.tscn")
 	#var bola = bol.instantiate()
 	#bola.global_position = Vector3(0,0,0)
 	#Things.add_child(bola, true)
-
-	loadedLevels[levelName].players[id] = character
-
-
-func _on_things_child_entered_tree(node: Node) -> void:
-	if multiplayer.is_server():
-		for c in multiplayer.get_peers():
-			node.get_node("MultiplayerSynchronizer").set_visibility_for(c,true)
-			
