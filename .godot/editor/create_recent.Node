@@ -1,4 +1,5 @@
-res://addons/virtual_joystick_plus/virtual_joystick_plus.gd
+res://addons/netfox/tick-interpolator.gd
+Node3D
 Control
 CanvasLayer
 RichTextLabel
@@ -11,5 +12,4 @@ TouchScreenButton
 MeshInstance3D
 MultiplayerSpawner
 CharacterBody3D
-Node3D
 AnimationPlayer

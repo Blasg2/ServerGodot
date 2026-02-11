@@ -48,7 +48,6 @@ func start_server(port: int = default_port) -> void:
 	multiplayer.peer_connected.connect(_on_player_connected)
 	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 	print("Server started on port ", port)
-	
 
 ## Connect to server
 func connect_to_server(address: String = "201.17.248.223", port: int = default_port) -> void:
