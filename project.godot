@@ -23,6 +23,11 @@ run/max_fps=60
 
 NetworkManager="*uid://cy8wxdmtqbis4"
 Ollama="*uid://cpiy34t6gytj5"
+NetworkTime="*uid://cnqdxyjptkfvp"
+NetworkTimeSynchronizer="*uid://5rmn2ik3kjo8"
+NetworkRollback="*uid://gas743comroj"
+NetworkEvents="*uid://bdmobxxptryj0"
+NetworkPerformance="*uid://cqgf7aqmjfoa3"
 
 [display]
 
@@ -31,7 +36,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/func_godot/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
+enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/func_godot/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
 
 [file_customization]
 
