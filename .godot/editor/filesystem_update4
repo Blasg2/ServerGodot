@@ -1,7 +1,8 @@
-res://scenes/characters/character.tscn
-res://addons/_Godot-IDE_/IDE.gd
-res://script/game_world.gd
-res://scenes/characters/character.gd
-res://scenes/characters/player_input.gd
-res://scenes/world/game_world.tscn
-res://script/autoload/network_manager.gd
+res://examples/multiplayer-fps/multiplayer-fps.tscn
+res://examples/shared/ui/network-popup.tscn
+res://examples/multiplayer-fps/menu.gd
+res://network_manager.gd
+res://authentication.gd
+res://examples/multiplayer-fps/scripts/player-spawner.gd
+res://examples/multiplayer-fps/characters/player.tscn
+res://examples/multiplayer-fps/scripts/player-input.gd

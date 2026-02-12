@@ -10,6 +10,11 @@ var SETTINGS: Array[Dictionary] = [
 		"value": true,
 		"type": TYPE_BOOL
 	},
+	{
+		"name": "netfox/general/use_raw_commands",
+		"value": false,
+		"type": TYPE_BOOL
+	},
 	# Logging
 	NetfoxLogger._make_setting("netfox/logging/netfox_log_level"),
 	# Time settings
@@ -145,6 +150,10 @@ const AUTOLOADS: Array[Dictionary] = [
 	{
 		"name": "NetworkPerformance",
 		"path": ROOT + "/network-performance.gd"
+	},
+	{
+		"name": "NetworkCommandServer",
+		"path": ROOT + "/servers/network-command-server.gd"
 	}
 ]
 
@@ -173,15 +182,22 @@ const TYPES: Array[Dictionary] = [
 		"script": ROOT + "/rewindable-action.gd",
 		"icon": ROOT + "/icons/rewindable-action.svg"
 	},
+	{
+		"name": "PredictiveSynchronizer",
+		"base": "Node",
+		"script": ROOT + "/rollback/predictive-synchronizer.gd",
+		"icon": ROOT + "/icons/predictive-synchronizer.svg"
+	},
 ]
 
 func _enter_tree():
 	for setting in SETTINGS:
 		add_setting(setting)
-	
+
 	for autoload in AUTOLOADS:
-		add_autoload_singleton(autoload.name, autoload.path)
-	
+		if not has_autoload(autoload.name):
+			add_autoload_singleton(autoload.name, autoload.path)
+
 	for type in TYPES:
 		add_custom_type(type.name, type.base, load(type.script), load(type.icon))
 
@@ -189,10 +205,11 @@ func _exit_tree() -> void:
 	if ProjectSettings.get_setting(&"netfox/general/clear_settings", false):
 		for setting in SETTINGS:
 			remove_setting(setting)
-	
+
 	for autoload in AUTOLOADS:
-		remove_autoload_singleton(autoload.name)
-	
+		if has_autoload(autoload.name):
+			remove_autoload_singleton(autoload.name)
+
 	for type in TYPES:
 		remove_custom_type(type.name)
 
@@ -212,5 +229,8 @@ func add_setting(setting: Dictionary) -> void:
 func remove_setting(setting: Dictionary) -> void:
 	if not ProjectSettings.has_setting(setting.name):
 		return
-	
+
 	ProjectSettings.clear(setting.name)
+
+func has_autoload(name: String) -> bool:
+	return ProjectSettings.has_setting("autoload/" + name)

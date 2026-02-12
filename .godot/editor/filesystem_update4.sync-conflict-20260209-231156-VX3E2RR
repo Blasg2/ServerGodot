@@ -1,6 +1,0 @@
-res://scenes/characters/character.tscn
-res://addons/_Godot-IDE_/IDE.gd
-res://scenes/characters/npc.gd
-res://scenes/characters/mesh_changer.gd
-res://scenes/characters/character.gd
-res://script/autoload/Ollama.gd
