@@ -1,6 +1,3 @@
 res://examples/multiplayer-fps/multiplayer-fps.tscn
+res://addons/_Godot-IDE_/IDE.gd
 res://examples/multiplayer-fps/characters/player.tscn
-res://examples/multiplayer-fps/scripts/player-spawner.gd
-res://examples/multiplayer-fps/menu.gd
-res://examples/multiplayer-fps/scripts/player.gd
-res://default_env.tres

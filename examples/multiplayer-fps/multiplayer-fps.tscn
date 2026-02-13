@@ -5,6 +5,9 @@
 [ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://examples/multiplayer-fps/menu.gd" id="5_573tb"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m76yx"]
+sky_top_color = Color(0.19499144, 0.4562344, 0.7399687, 1)
+sky_curve = 0.041608967
+ground_bottom_color = Color(0.11899438, 0.32693404, 0.23259774, 1)
 
 [sub_resource type="Sky" id="Sky_e76ss"]
 sky_material = SubResource("ProceduralSkyMaterial_m76yx")
@@ -12,6 +15,7 @@ sky_material = SubResource("ProceduralSkyMaterial_m76yx")
 [sub_resource type="Environment" id="Environment_xhc6u"]
 background_mode = 2
 sky = SubResource("Sky_e76ss")
+ssr_max_steps = 252
 
 [node name="multiplayer-fps" type="Node" unique_id=436590645]
 
@@ -19,7 +23,6 @@ sky = SubResource("Sky_e76ss")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=934541928]
 transform = Transform3D(0.5, 0.612372, -0.612372, 0, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -6.7361, 8.77817, 3.88909)
-shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="Environment" unique_id=631641533]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 14.3564, 8.86602)
@@ -37,9 +40,37 @@ player_scene = ExtResource("2_p13fk")
 [node name="Map" type="Node" parent="." unique_id=1525437376]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Map" unique_id=5043280]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4265747, -4.600196, -1.8263245)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3999939, -4.600198, -1.8637314)
 use_collision = true
 size = Vector3(48.022583, 8.0625, 44.772034)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Map" unique_id=294443413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.9694824, 0)
+use_collision = true
+height = 7.938965
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Map" unique_id=791362527]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.243021, 3.005371, 0)
+use_collision = true
+height = 8.010742
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Map" unique_id=923888956]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.243021, 2, -16.532398)
+use_collision = true
+height = 6.0
+
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="Map" unique_id=151914925]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.3276243, 2, -16.532398)
+use_collision = true
+height = 6.0
+
+[node name="DisplayNameLabel3D" type="Label3D" parent="Map" unique_id=517125585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0055106, 0)
+pixel_size = 0.002
+billboard = 1
+fixed_size = true
+text = "Oi pessoas de bem."
+font_size = 16
 
 [node name="Control" type="Control" parent="." unique_id=844985072]
 layout_mode = 3

@@ -9,14 +9,7 @@ extends CharacterBody3D
 @onready var head := $Head as Node3D
 @onready var hud := $HUD as CanvasGroup
 
-static var _logger := NetfoxLogger.new("game", "Player")
-
 var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
-var health: int = 100
-var death_tick: int = -1
-var respawn_position: Vector3
-var did_respawn := false
-var deaths := 0
 
 func _ready():
 	display_name.text = name
@@ -26,23 +19,16 @@ func _ready():
 	NetworkTime.after_tick_loop.connect(_after_tick_loop)
 
 func _tick(dt: float, tick: int):
-	if health <= 0:
-		$DieSFX.play()
-		deaths += 1
-		die()
+	pass
 
 func _after_tick_loop():
-	if did_respawn:
-		tick_interpolator.teleport()
+	pass
 
 func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
-	# Handle respawn
-	if tick == death_tick:
-		global_position = respawn_position
-		did_respawn = true
-	else:
-		did_respawn = false
-
+	 # Skip simulation if prediction confidence is zero
+	if is_zero_approx(input.confidence):
+		$RollbackSynchronizer.ignore_prediction(self)
+		return
 	# Gravity
 	_force_update_is_on_floor()
 	if is_on_floor():
@@ -82,22 +68,6 @@ func _force_update_is_on_floor():
 	velocity = Vector3.ZERO
 	move_and_slide()
 	velocity = old_velocity
-
-func damage():
-	$HitSFX.play()
-	if is_multiplayer_authority():
-		health -= 34
-		_logger.warning("%s HP now at %s", [name, health])
-
-func die():
-	if not is_multiplayer_authority():
-		return
-
-	_logger.warning("%s died", [name])
-	respawn_position = get_parent().get_next_spawn_point(get_player_id(), deaths)
-	death_tick = NetworkTime.tick
-
-	health = 100
 
 func get_player_id() -> int:
 	return input.get_multiplayer_authority()

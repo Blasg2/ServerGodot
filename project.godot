@@ -18,7 +18,7 @@ config/name="netfox"
 config/description="Network addon with rollback"
 run/main_scene="uid://bfshwoko470di"
 config/features=PackedStringArray("4.6")
-run/max_fps=144
+run/max_fps=60
 config/icon="res://icon.png"
 
 [autoload]
@@ -38,12 +38,19 @@ NetworkManager="*uid://4nfm7km0c3lb"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=2
-window/vsync/vsync_mode=3
+window/size/always_on_top=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
+enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://addons/_Godot-IDE_/plugins": "blue",
+"res://addons/_Godot-IDE_/plugins/": "blue",
+"res://addons/_Godot-IDE_/shared_resources/": "teal"
+}
 
 [filesystem]
 
@@ -128,15 +135,18 @@ escape={
 [netfox]
 
 general/clear_settings=false
-time/tickrate=24
 extras/auto_tile_windows=true
 autoconnect/enabled=false
+time/tickrate=30
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
-lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
-anti_aliasing/quality/msaa_2d=3
-anti_aliasing/quality/msaa_3d=3
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 
 [vest]
 
