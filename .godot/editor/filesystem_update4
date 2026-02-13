@@ -1,8 +1,6 @@
 res://examples/multiplayer-fps/multiplayer-fps.tscn
-res://examples/shared/ui/network-popup.tscn
-res://examples/multiplayer-fps/menu.gd
-res://network_manager.gd
-res://authentication.gd
-res://examples/multiplayer-fps/scripts/player-spawner.gd
 res://examples/multiplayer-fps/characters/player.tscn
-res://examples/multiplayer-fps/scripts/player-input.gd
+res://examples/multiplayer-fps/scripts/player-spawner.gd
+res://examples/multiplayer-fps/menu.gd
+res://examples/multiplayer-fps/scripts/player.gd
+res://default_env.tres

@@ -16,16 +16,14 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="netfox"
 config/description="Network addon with rollback"
+run/main_scene="uid://bfshwoko470di"
 config/features=PackedStringArray("4.6")
-run/max_fps=240
+run/max_fps=144
 config/icon="res://icon.png"
 
 [autoload]
 
 Async="*res://examples/shared/scripts/async.gd"
-GameEvents="*res://examples/forest-brawl/scripts/game-events.gd"
-Noray="*res://addons/netfox.noray/noray.gd"
-PacketHandshake="*res://addons/netfox.noray/packet-handshake.gd"
 WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
 NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
 NetworkTime="*res://addons/netfox/network-time.gd"
@@ -38,13 +36,14 @@ NetworkManager="*uid://4nfm7km0c3lb"
 
 [display]
 
-window/size/viewport_width=540
-window/size/viewport_height=540
-window/vsync/vsync_mode=0
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+window/vsync/vsync_mode=3
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox.noray/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/vest/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
 
 [filesystem]
 
@@ -136,7 +135,8 @@ autoconnect/enabled=false
 [rendering]
 
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
-anti_aliasing/quality/screen_space_aa=1
+anti_aliasing/quality/msaa_2d=3
+anti_aliasing/quality/msaa_3d=3
 
 [vest]
 

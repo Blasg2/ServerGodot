@@ -101,3 +101,4 @@ func die():
 
 func get_player_id() -> int:
 	return input.get_multiplayer_authority()
+	
