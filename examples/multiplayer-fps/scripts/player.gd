@@ -3,7 +3,6 @@ extends CharacterBody3D
 @export var speed = 5.0
 @export var jump_strength = 5.0
 
-@onready var display_name := $DisplayNameLabel3D as Label3D
 @onready var input := $Input as PlayerInputFPS
 @onready var head := $Head as Node3D
 @onready var hud := $HUD as CanvasGroup
@@ -13,7 +12,7 @@ extends CharacterBody3D
 
 var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
 
-var username: String 
+var username: String
 var CurrentLevel: String
 
 func _notification(what):
@@ -22,15 +21,16 @@ func _notification(what):
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 
 func _ready():
-	display_name.text = name
 	hud.hide()
 	await get_tree().process_frame
-	input.set_multiplayer_authority(int(name))	
-	$RollbackSynchronizer.process_settings()
+	#input.set_multiplayer_authority(int(name))
+	#$RollbackSynchronizer.process_settings()
 
 func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
+		
+	#_force_update_physics_transform()
 	_force_update_is_on_floor()
 	if is_on_floor():
 		if input.jump:
@@ -62,6 +62,11 @@ func _force_update_is_on_floor():
 	velocity = Vector3.ZERO
 	move_and_slide()
 	velocity = old_velocity
+	
+func _force_update_physics_transform():
+	PhysicsServer3D.body_set_mode(get_rid(), PhysicsServer3D.BODY_MODE_STATIC)
+	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, global_transform)
+	PhysicsServer3D.body_set_mode(get_rid(), PhysicsServer3D.BODY_MODE_KINEMATIC)
 
 func get_player_id() -> int:
 	return input.get_multiplayer_authority()

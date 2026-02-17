@@ -1,9 +1,9 @@
+MultiplayerSynchronizer
 MeshInstance3D
 Node
 WorldEnvironment
 DirectionalLight3D
 CSGBox3D
-MultiplayerSynchronizer
 MultiplayerSpawner
 CSGCylinder3D
 LineEdit

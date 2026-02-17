@@ -27,11 +27,11 @@ func _process(delta: float) -> void:
 			get_node(\"/root/World/Players\").rpc_id(1, \"change_level\", \"Casa\")
 "
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_x1lbd"]
-
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_li4lc"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x1lbd"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_li4lc"]
 
 [node name="player" type="CharacterBody3D" unique_id=2099362635]
 script = ExtResource("1_mk8qw")
@@ -42,13 +42,6 @@ script = SubResource("GDScript_x1lbd")
 
 [node name="Camera3D" type="Camera3D" parent="Head" unique_id=1173437487]
 transform = Transform3D(1, 0, 0, 0, 0.9768369, 0.21398523, 0, -0.21398523, 0.9768369, 0, 0.057186723, 1.7407581)
-
-[node name="DisplayNameLabel3D" type="Label3D" parent="." unique_id=418776490]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2806578, 0)
-pixel_size = 0.002
-billboard = 1
-fixed_size = true
-font_size = 16
 
 [node name="TickInterpolator" type="Node" parent="." unique_id=1526413239 node_paths=PackedStringArray("root")]
 script = ExtResource("2_3rc26")
@@ -66,11 +59,6 @@ root = NodePath("..")
 state_properties = Array[String]([":transform", ":velocity", "Head:transform"])
 input_properties = Array[String](["Input:movement", "Input:jump", "Input:look_angle"])
 enable_input_broadcast = false
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2011406990]
-replication_config = SubResource("SceneReplicationConfig_x1lbd")
-visibility_update_mode = 2
-public_visibility = false
 
 [node name="HUD" type="CanvasGroup" parent="." unique_id=1105697052]
 
@@ -90,3 +78,8 @@ skeleton = NodePath("")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=480938697]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033290982, 0.6165855, 0.0939585)
 shape = SubResource("CapsuleShape3D_x1lbd")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=540899234]
+replication_config = SubResource("SceneReplicationConfig_li4lc")
+visibility_update_mode = 2
+public_visibility = false

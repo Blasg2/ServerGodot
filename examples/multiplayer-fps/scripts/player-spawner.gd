@@ -179,6 +179,8 @@ func despawn_player(peer_id: int) -> void:
 			sql.close_db()
 			avatar.queue_free()
 		avatars.erase(peer_id)
+		
+
 
 func _on_child_added(node: Node) -> void:
 	if not node.has_method("_rollback_tick"):
@@ -188,6 +190,16 @@ func _on_child_added(node: Node) -> void:
 		return
 	avatars[peer_id] = node
 
+	# Set input authority for ALL players on ALL peers
+	var input := node.find_child("Input")
+	if input != null:
+		input.set_multiplayer_authority(peer_id)
+		await get_tree().process_frame
+		var roll := node.find_child("RollbackSynchronizer") 
+		if roll != null:
+			roll.process_settings()
+
+	# Only do local setup for our own player
 	if peer_id == multiplayer.get_unique_id():
 		if is_instance_valid(MainMenu):
 			MainMenu.queue_free()
