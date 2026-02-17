@@ -1,78 +1,28 @@
 [gd_scene format=3 uid="uid://bfshwoko470di"]
 
+[ext_resource type="Script" uid="uid://dt4daeaf7qbxi" path="res://examples/multiplayer-fps/visibility.gd" id="1_573tb"]
 [ext_resource type="PackedScene" uid="uid://vrso6qncj1nm" path="res://examples/multiplayer-fps/characters/player.tscn" id="2_p13fk"]
 [ext_resource type="Script" uid="uid://b7dcdxh4qdxwv" path="res://examples/multiplayer-fps/scripts/player-spawner.gd" id="3_c7rxg"]
 [ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://examples/multiplayer-fps/menu.gd" id="5_573tb"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m76yx"]
-sky_top_color = Color(0.19499144, 0.4562344, 0.7399687, 1)
-sky_curve = 0.041608967
-ground_bottom_color = Color(0.11899438, 0.32693404, 0.23259774, 1)
+[node name="World" type="Node" unique_id=436590645]
+script = ExtResource("1_573tb")
 
-[sub_resource type="Sky" id="Sky_e76ss"]
-sky_material = SubResource("ProceduralSkyMaterial_m76yx")
+[node name="PlayerSpawn" type="MultiplayerSpawner" parent="." unique_id=463232178]
+_spawnable_scenes = PackedStringArray("uid://vrso6qncj1nm")
+spawn_path = NodePath("../Players")
 
-[sub_resource type="Environment" id="Environment_xhc6u"]
-background_mode = 2
-sky = SubResource("Sky_e76ss")
-ssr_max_steps = 252
+[node name="MapSpawn" type="MultiplayerSpawner" parent="." unique_id=1800856884]
+spawn_path = NodePath("../Maps")
 
-[node name="multiplayer-fps" type="Node" unique_id=436590645]
-
-[node name="Environment" type="Node" parent="." unique_id=1569129913]
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=934541928]
-transform = Transform3D(0.5, 0.612372, -0.612372, 0, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -6.7361, 8.77817, 3.88909)
-
-[node name="Camera3D" type="Camera3D" parent="Environment" unique_id=631641533]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 14.3564, 8.86602)
-current = true
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=2106215519]
-environment = SubResource("Environment_xhc6u")
-
-[node name="Network" type="Node" parent="." unique_id=1593300601]
-
-[node name="PlayerSpawner" type="Node" parent="Network" unique_id=255705867]
+[node name="Players" type="Node" parent="." unique_id=255705867 node_paths=PackedStringArray("MainMenu")]
 script = ExtResource("3_c7rxg")
 player_scene = ExtResource("2_p13fk")
+MainMenu = NodePath("../MainMenu")
 
-[node name="Map" type="Node" parent="." unique_id=1525437376]
+[node name="Maps" type="Node" parent="." unique_id=1525437376]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Map" unique_id=5043280]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3999939, -4.600198, -1.8637314)
-use_collision = true
-size = Vector3(48.022583, 8.0625, 44.772034)
-
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Map" unique_id=294443413]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.9694824, 0)
-use_collision = true
-height = 7.938965
-
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Map" unique_id=791362527]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.243021, 3.005371, 0)
-use_collision = true
-height = 8.010742
-
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Map" unique_id=923888956]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.243021, 2, -16.532398)
-use_collision = true
-height = 6.0
-
-[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="Map" unique_id=151914925]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.3276243, 2, -16.532398)
-use_collision = true
-height = 6.0
-
-[node name="DisplayNameLabel3D" type="Label3D" parent="Map" unique_id=517125585]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0055106, 0)
-pixel_size = 0.002
-billboard = 1
-fixed_size = true
-text = "Oi pessoas de bem."
-font_size = 16
-
-[node name="Control" type="Control" parent="." unique_id=844985072]
+[node name="MainMenu" type="Control" parent="." unique_id=844985072]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -81,32 +31,49 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_573tb")
 
-[node name="ClientButton" type="Button" parent="Control" unique_id=896434966]
-layout_mode = 0
-offset_left = 230.0
-offset_top = 121.0
-offset_right = 360.0
-offset_bottom = 158.0
+[node name="ClientButton" type="Button" parent="MainMenu" unique_id=896434966]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -65.0
+offset_top = -18.5
+offset_right = 65.0
+offset_bottom = 18.5
+grow_horizontal = 2
+grow_vertical = 2
 text = "Login"
 
-[node name="User" type="LineEdit" parent="Control" unique_id=1153221334]
-layout_mode = 0
-offset_left = 181.0
-offset_top = 24.0
-offset_right = 353.0
-offset_bottom = 55.0
+[node name="User" type="LineEdit" parent="MainMenu" unique_id=1153221334]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -86.0
+offset_top = -113.0
+offset_right = 86.0
+offset_bottom = -82.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Password" type="LineEdit" parent="Control" unique_id=282987421]
-layout_mode = 0
-offset_left = 177.0
-offset_top = 79.0
-offset_right = 359.0
-offset_bottom = 110.0
+[node name="Password" type="LineEdit" parent="MainMenu" unique_id=282987421]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -91.0
+offset_top = -67.0
+offset_right = 91.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=463232178]
-_spawnable_scenes = PackedStringArray("uid://vrso6qncj1nm")
-spawn_path = NodePath("../Network/PlayerSpawner")
-
-[connection signal="pressed" from="Control/ClientButton" to="Control" method="_on_client_button_pressed"]
-[connection signal="text_submitted" from="Control/User" to="Control" method="_on_user_text_submitted"]
-[connection signal="text_submitted" from="Control/Password" to="Control" method="_on_password_text_submitted"]
+[connection signal="pressed" from="MainMenu/ClientButton" to="MainMenu" method="_on_client_button_pressed"]
+[connection signal="text_submitted" from="MainMenu/User" to="MainMenu" method="_on_user_text_submitted"]
+[connection signal="text_submitted" from="MainMenu/Password" to="MainMenu" method="_on_password_text_submitted"]
