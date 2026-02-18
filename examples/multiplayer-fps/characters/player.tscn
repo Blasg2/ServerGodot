@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="1_g0p7o"]
 [ext_resource type="Script" uid="uid://q46d8xjl1rpk" path="res://examples/multiplayer-fps/scripts/player.gd" id="1_mk8qw"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_3rc26"]
+[ext_resource type="Script" uid="uid://b0456tjm7q8ve" path="res://examples/multiplayer-fps/characters/CharMesh.gd" id="8_25y1x"]
 [ext_resource type="Script" uid="uid://bnyn3dyybrwkj" path="res://examples/multiplayer-fps/scripts/player-input.gd" id="10_50d5g"]
 [ext_resource type="Script" uid="uid://bpp3g8xk4qngo" path="res://examples/multiplayer-fps/scripts/ui/window-size-connector.gd" id="13_mlcnx"]
 [ext_resource type="Script" uid="uid://68ntxlb14fan" path="res://examples/multiplayer-fps/scripts/ui/crosshair.gd" id="14_npl66"]
@@ -18,20 +19,18 @@ script/source = "extends Node3D
 func _process(delta: float) -> void:
 	if $\"../Input\".get_multiplayer_authority() == multiplayer.get_unique_id():
 		if Input.is_action_just_pressed(\"ui_page_down\"): 
-			#if $\"..\".CurrentLevel == \"level1\":
 			
-			get_node(\"/root/World/Players\").rpc_id(1, \"change_level\", \"level1\")
-			#print($\"..\".CurrentLevel)
-			##else:
+			get_node(\"/root/World/Players\").rpc_id(1, \"change_level\", \"level1\", Vector3(1,1,1))
 		if Input.is_action_just_pressed(\"ui_page_up\"):
-			get_node(\"/root/World/Players\").rpc_id(1, \"change_level\", \"Casa\")
+			get_node(\"/root/World/Players\").rpc_id(1, \"change_level\", \"Casa\", Vector3(0,15.1,0))
 "
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_li4lc"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x1lbd"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_li4lc"]
+properties/0/path = NodePath("Mesh:meshPath")
+properties/0/spawn = true
+properties/0/replication_mode = 2
 
 [node name="player" type="CharacterBody3D" unique_id=2099362635]
 script = ExtResource("1_mk8qw")
@@ -57,6 +56,7 @@ hud = NodePath("../HUD")
 script = ExtResource("1_g0p7o")
 root = NodePath("..")
 state_properties = Array[String]([":transform", ":velocity", "Head:transform"])
+full_state_interval = 30
 input_properties = Array[String](["Input:movement", "Input:jump", "Input:look_angle"])
 enable_input_broadcast = false
 
@@ -70,11 +70,6 @@ target_nodes = [null]
 script = ExtResource("14_npl66")
 crosshair_sprite = ExtResource("14_qqmle")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=130888096]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033290982, 0.6165855, 0.0939585)
-mesh = SubResource("CapsuleMesh_li4lc")
-skeleton = NodePath("")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=480938697]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033290982, 0.6165855, 0.0939585)
 shape = SubResource("CapsuleShape3D_x1lbd")
@@ -83,3 +78,10 @@ shape = SubResource("CapsuleShape3D_x1lbd")
 replication_config = SubResource("SceneReplicationConfig_li4lc")
 visibility_update_mode = 2
 public_visibility = false
+
+[node name="Mesh" type="Node3D" parent="." unique_id=1887965358]
+transform = Transform3D(-1.5401328e-08, -0.3523413, -5.7403692e-08, 0, -5.7403692e-08, 0.3523413, -0.3523413, 1.5401328e-08, 2.5091951e-15, 0, 0, 0)
+script = ExtResource("8_25y1x")
+
+[node name="meshy" type="MeshInstance3D" parent="Mesh" unique_id=1029742667]
+skeleton = NodePath("")

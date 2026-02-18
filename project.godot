@@ -18,7 +18,6 @@ config/name="MyNetFox"
 config/description="Network addon with rollback"
 run/main_scene="uid://bfshwoko470di"
 config/features=PackedStringArray("4.6")
-run/max_fps=60
 config/icon="res://icon.png"
 
 [autoload]
@@ -39,6 +38,7 @@ NetworkManager="*uid://4nfm7km0c3lb"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/always_on_top=true
+window/vsync/vsync_mode=3
 
 [editor_plugins]
 
@@ -141,7 +141,11 @@ tab={
 general/clear_settings=false
 extras/auto_tile_windows=true
 autoconnect/enabled=false
-time/tickrate=60
+time/tickrate=30
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 

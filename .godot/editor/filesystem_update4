@@ -1,8 +1,7 @@
 res://examples/multiplayer-fps/characters/player.tscn
 res://addons/_Godot-IDE_/IDE.gd
-res://examples/multiplayer-fps/scripts/player-spawner.gd
+res://Art/PsxChar/iusaf.tres
+res://Art/PsxChar/gariba.tres
+res://Art/PsxChar/joj.tres
+res://Art/PsxChar/lil.tres
 res://Maps/level1.tscn
-res://examples/multiplayer-fps/scripts/player.gd
-res://examples/multiplayer-fps/multiplayer-fps.tscn
-res://examples/multiplayer-fps/scripts/player-input.gd
-res://Maps/casa.tscn

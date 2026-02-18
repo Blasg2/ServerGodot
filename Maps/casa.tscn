@@ -28,7 +28,7 @@ transform = Transform3D(1, 0, 0, 0, 0.8303139, 0.5572959, 0, -0.5572959, 0.83031
 environment = SubResource("Environment_5mmj8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=308156262]
-transform = Transform3D(8.177094, 0, 0, 0, 0.5695197, 0, 0, 0, 8.62135, 0, 0, 0)
+transform = Transform3D(26.807894, 0, 0, 0, 0.5695197, 0, 0, 0, 34.939816, 0, 15, 0)
 mesh = SubResource("BoxMesh_5mmj8")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1578711911]

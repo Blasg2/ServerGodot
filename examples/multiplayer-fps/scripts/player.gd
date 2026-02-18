@@ -9,28 +9,38 @@ extends CharacterBody3D
 @onready var MpSync := $MultiplayerSynchronizer
 @onready var rollback: RollbackSynchronizer = $RollbackSynchronizer
 
+var pending_teleport: Vector3 = Vector3.INF	
 
 var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
 
 var username: String
 var CurrentLevel: String
 
+
 func _notification(what):
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MINIMIZED:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+			
+func server_teleport(pos: Vector3) -> void:
+	pending_teleport = pos
 
 func _ready():
 	hud.hide()
-	await get_tree().process_frame
+	#await get_tree().process_frame
 	#input.set_multiplayer_authority(int(name))
 	#$RollbackSynchronizer.process_settings()
 
 func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
-		
-	#_force_update_physics_transform()
+	
+	if pending_teleport != Vector3.INF:
+		global_position = pending_teleport
+		velocity = Vector3.ZERO
+		pending_teleport = Vector3.INF
+		return  # Skip normal movement this tick
+	
 	_force_update_is_on_floor()
 	if is_on_floor():
 		if input.jump:
@@ -63,10 +73,6 @@ func _force_update_is_on_floor():
 	move_and_slide()
 	velocity = old_velocity
 	
-func _force_update_physics_transform():
-	PhysicsServer3D.body_set_mode(get_rid(), PhysicsServer3D.BODY_MODE_STATIC)
-	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, global_transform)
-	PhysicsServer3D.body_set_mode(get_rid(), PhysicsServer3D.BODY_MODE_KINEMATIC)
 
 func get_player_id() -> int:
 	return input.get_multiplayer_authority()

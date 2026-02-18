@@ -13,6 +13,8 @@ var _login_flow_started := false
 
 var allLevels = ["res://Maps/level1.tscn", "res://Maps/casa.tscn"]
 var loadedLevels = {}
+var pending_positions: Dictionary = {}  # {peer_id: Vector3}
+
 
 signal auth_done(success: bool)
 
@@ -58,6 +60,7 @@ func _on_login_success(_account_data: Dictionary) -> void:
 
 func _on_login_fail(reason: String) -> void:
 	print("Login failed: ", reason)
+	NetworkTime.stop()
 	if multiplayer.multiplayer_peer:
 		multiplayer.multiplayer_peer.close()
 		multiplayer.multiplayer_peer = null
@@ -126,6 +129,10 @@ func spawn_player(peer_id: int, levelName: String)->void:
 
 func add_to_level(levelName: String, id: int, avatar: CharacterBody3D) -> void:
 	avatar.CurrentLevel = levelName
+	if pending_positions.has(id):
+		avatar.server_teleport(pending_positions[id])
+		pending_positions.erase(id)
+	
 	loadedLevels[levelName].playersOnLevel[id] = avatar
 	for p in loadedLevels[levelName].playersOnLevel.values():
 		p.MpSync.set_visibility_for(id, true)
@@ -150,13 +157,15 @@ func remove_from_level(id: int, avatar: CharacterBody3D) -> void:
 	
 	
 @rpc("any_peer", "reliable")
-func change_level(NextLevel: String)->void:
+func change_level(NextLevel: String, pos: Vector3)->void:
 	var id = multiplayer.get_remote_sender_id()
 	var avatar = avatars[id]
 	remove_from_level(id, avatar)
 	avatar.process_mode = Node.PROCESS_MODE_DISABLED
 	loadedLevels[avatar.CurrentLevel].MpSync.set_visibility_for(id, false)
+	pending_positions[id] = pos
 	loadedLevels[NextLevel].MpSync.set_visibility_for(id, true)
+
 
 
 
@@ -195,9 +204,11 @@ func _on_child_added(node: Node) -> void:
 	if input != null:
 		input.set_multiplayer_authority(peer_id)
 		await get_tree().process_frame
-		var roll := node.find_child("RollbackSynchronizer") 
+		var roll := node.find_child("RollbackSynchronizer")
 		if roll != null:
 			roll.process_settings()
+			#roll.visibility_filter.default_visibility = false  #may not be necessary... idk
+
 
 	# Only do local setup for our own player
 	if peer_id == multiplayer.get_unique_id():
