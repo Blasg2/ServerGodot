@@ -32,6 +32,7 @@ NetworkEvents="*res://addons/netfox/network-events.gd"
 NetworkPerformance="*res://addons/netfox/network-performance.gd"
 NetworkCommandServer="*res://addons/netfox/servers/network-command-server.gd"
 NetworkManager="*uid://4nfm7km0c3lb"
+Ollama="*uid://dqmjqyg5t1lsb"
 
 [display]
 
@@ -141,7 +142,8 @@ tab={
 general/clear_settings=false
 extras/auto_tile_windows=true
 autoconnect/enabled=false
-time/tickrate=30
+time/tickrate=60
+rollback/display_offset=2
 
 [physics]
 

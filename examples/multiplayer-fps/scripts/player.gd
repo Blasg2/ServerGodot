@@ -9,13 +9,12 @@ extends CharacterBody3D
 @onready var MpSync := $MultiplayerSynchronizer
 @onready var rollback: RollbackSynchronizer = $RollbackSynchronizer
 
-var pending_teleport: Vector3 = Vector3.INF	
+var pending_teleport: Vector3 = Vector3.INF
 
 var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
 
 var username: String
 var CurrentLevel: String
-
 
 func _notification(what):
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:

@@ -1,12 +1,10 @@
 [gd_scene format=3 uid="uid://bfshwoko470di"]
 
-[ext_resource type="Script" uid="uid://dt4daeaf7qbxi" path="res://examples/multiplayer-fps/visibility.gd" id="1_573tb"]
 [ext_resource type="PackedScene" uid="uid://vrso6qncj1nm" path="res://examples/multiplayer-fps/characters/player.tscn" id="2_p13fk"]
 [ext_resource type="Script" uid="uid://b7dcdxh4qdxwv" path="res://examples/multiplayer-fps/scripts/player-spawner.gd" id="3_c7rxg"]
 [ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://examples/multiplayer-fps/menu.gd" id="5_573tb"]
 
 [node name="World" type="Node" unique_id=436590645]
-script = ExtResource("1_573tb")
 
 [node name="PlayerSpawn" type="MultiplayerSpawner" parent="." unique_id=463232178]
 _spawnable_scenes = PackedStringArray("uid://vrso6qncj1nm")

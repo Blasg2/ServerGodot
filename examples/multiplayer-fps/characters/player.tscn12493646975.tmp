@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://q46d8xjl1rpk" path="res://examples/multiplayer-fps/scripts/player.gd" id="1_mk8qw"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_3rc26"]
 [ext_resource type="Script" uid="uid://b0456tjm7q8ve" path="res://examples/multiplayer-fps/characters/CharMesh.gd" id="8_25y1x"]
-[ext_resource type="Script" uid="uid://bhvgd06y1i625" path="res://Scripts/npc.gd" id="9_25y1x"]
 [ext_resource type="Script" uid="uid://bnyn3dyybrwkj" path="res://examples/multiplayer-fps/scripts/player-input.gd" id="10_50d5g"]
 [ext_resource type="Script" uid="uid://bpp3g8xk4qngo" path="res://examples/multiplayer-fps/scripts/ui/window-size-connector.gd" id="13_mlcnx"]
 [ext_resource type="Script" uid="uid://68ntxlb14fan" path="res://examples/multiplayer-fps/scripts/ui/crosshair.gd" id="14_npl66"]
@@ -35,6 +34,8 @@ properties/0/replication_mode = 2
 
 [node name="player" type="CharacterBody3D" unique_id=2099362635]
 script = ExtResource("1_mk8qw")
+speed = null
+jump_strength = null
 
 [node name="Head" type="Node3D" parent="." unique_id=1781485463]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6820858, 0)
@@ -57,7 +58,7 @@ hud = NodePath("../HUD")
 script = ExtResource("1_g0p7o")
 root = NodePath("..")
 state_properties = Array[String]([":transform", ":velocity", "Head:transform"])
-full_state_interval = 60
+full_state_interval = 30
 input_properties = Array[String](["Input:movement", "Input:jump", "Input:look_angle"])
 enable_input_broadcast = false
 
@@ -86,21 +87,3 @@ script = ExtResource("8_25y1x")
 
 [node name="meshy" type="MeshInstance3D" parent="Mesh" unique_id=1029742667]
 skeleton = NodePath("")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=214615723]
-
-[node name="NpcChat" type="LineEdit" parent="CanvasLayer" unique_id=957881790]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -368.0
-offset_top = -161.0
-offset_right = 371.0
-offset_bottom = -99.0
-grow_horizontal = 2
-grow_vertical = 0
-script = ExtResource("9_25y1x")
-
-[connection signal="text_submitted" from="CanvasLayer/NpcChat" to="CanvasLayer/NpcChat" method="_on_text_submitted"]

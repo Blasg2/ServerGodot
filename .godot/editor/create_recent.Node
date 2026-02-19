@@ -1,3 +1,6 @@
+LineEdit
+Control
+CanvasLayer
 Node
 MultiplayerSynchronizer
 MeshInstance3D
@@ -6,6 +9,4 @@ DirectionalLight3D
 CSGBox3D
 MultiplayerSpawner
 CSGCylinder3D
-LineEdit
 Button
-Control

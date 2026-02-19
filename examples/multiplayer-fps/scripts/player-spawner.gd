@@ -190,7 +190,7 @@ func despawn_player(peer_id: int) -> void:
 		avatars.erase(peer_id)
 		
 
-
+##Runs on enter_tree
 func _on_child_added(node: Node) -> void:
 	if not node.has_method("_rollback_tick"):
 		return
@@ -207,7 +207,7 @@ func _on_child_added(node: Node) -> void:
 		var roll := node.find_child("RollbackSynchronizer")
 		if roll != null:
 			roll.process_settings()
-			#roll.visibility_filter.default_visibility = false  #may not be necessary... idk
+			roll.visibility_filter.default_visibility = false 
 
 
 	# Only do local setup for our own player
