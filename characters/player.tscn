@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="1_g0p7o"]
 [ext_resource type="Script" uid="uid://q46d8xjl1rpk" path="res://characters/player.gd" id="1_mk8qw"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_3rc26"]
+[ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="6_h1q25"]
 [ext_resource type="Script" uid="uid://b0456tjm7q8ve" path="res://characters/CharMesh.gd" id="8_25y1x"]
 [ext_resource type="Script" uid="uid://bnyn3dyybrwkj" path="res://characters/player-input.gd" id="10_50d5g"]
 
@@ -105,9 +106,8 @@ mouse_sensitivity = 0.005
 script = ExtResource("1_g0p7o")
 root = NodePath("..")
 state_properties = Array[String]([":transform", ":velocity"])
-full_state_interval = 15
+full_state_interval = 60
 input_properties = Array[String](["Input:movement", "Input:jump", "Input:camera_yaw"])
-enable_input_broadcast = false
 
 [node name="TickInterpolator" type="Node" parent="." unique_id=1526413239 node_paths=PackedStringArray("root")]
 script = ExtResource("2_3rc26")
@@ -144,3 +144,8 @@ spring_length = 3.0
 [node name="Camera3D" type="Camera3D" parent="SpringArmPivot" unique_id=124851159 node_paths=PackedStringArray("spring_arm")]
 script = SubResource("GDScript_h1q25")
 spring_arm = NodePath("../SpringArm3D/SpringPosition")
+
+[node name="StateSynchronizer" type="Node" parent="." unique_id=1580966917 node_paths=PackedStringArray("root")]
+script = ExtResource("6_h1q25")
+root = NodePath("..")
+metadata/_custom_type_script = "uid://3lbngqcexe0l"

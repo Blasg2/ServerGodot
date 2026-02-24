@@ -13,7 +13,6 @@ script/source = "extends Label
 
 func _process(_delta):
 	if multiplayer.get_unique_id() == 1:
-		text = \"Server\"
 		return
 	var peer = multiplayer.multiplayer_peer
 	if peer == null:
@@ -24,7 +23,7 @@ func _process(_delta):
 	var rtt = peer_info.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
 	var loss_raw = peer_info.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS)
 	var loss_pct = loss_raw / 655.36
-	text = \"Ping: %d ms | Loss: %.1f%%\" % [rtt, loss_pct]
+	text = \"Ping: %d ms | Loss: %.1f%%\" % [rtt, loss_pct] + \" | FPS: %d | Tick: %d\" % [Engine.get_frames_per_second(), NetworkTime.tick]
 "
 
 [node name="HUD" type="CanvasLayer" unique_id=1196462823]

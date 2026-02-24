@@ -102,7 +102,7 @@ func client_level_ready(levelName: String) -> void:
 	# Initial spawn
 		spawn_player(id, levelName)
 	
-func spawn_player(peer_id: int, levelName: String)->void:
+func spawn_player(peer_id: int, levelName: String) -> void:
 	if not multiplayer.is_server():
 		return
 	if avatars.has(peer_id):
@@ -110,9 +110,10 @@ func spawn_player(peer_id: int, levelName: String)->void:
 	var avatar := player_scene.instantiate() as Node
 	avatar.name = str(peer_id)
 	avatar.username = NetworkManager.get_account_data(peer_id)["username"]
-
 	avatar.set_multiplayer_authority(1)
-	var globalPos:Vector3
+	avatar.CurrentLevel = levelName  # Store BEFORE add_child
+	
+	var globalPos: Vector3
 	var sql = SQLite.new()
 	sql.path = database
 	sql.open_db()
@@ -124,8 +125,8 @@ func spawn_player(peer_id: int, levelName: String)->void:
 	
 	add_child(avatar, true)
 	avatar.global_position = globalPos
-	
-	add_to_level(levelName,peer_id,avatar)
+	# REMOVED: add_to_level call — now happens in _on_child_added
+
 
 func add_to_level(levelName: String, id: int, avatar: CharacterBody3D) -> void:
 	avatar.CurrentLevel = levelName
@@ -134,13 +135,16 @@ func add_to_level(levelName: String, id: int, avatar: CharacterBody3D) -> void:
 		pending_positions.erase(id)
 	
 	loadedLevels[levelName].playersOnLevel[id] = avatar
+	# Loop 1: existing players send state TO new player
 	for p in loadedLevels[levelName].playersOnLevel.values():
 		p.MpSync.set_visibility_for(id, true)
 		p.rollback.visibility_filter.set_visibility_for(id, true)
 		p.rollback.visibility_filter.update_visibility()
+	# Loop 2: new player sends state TO existing players
 	for p in loadedLevels[levelName].playersOnLevel:
 		if p != id:
 			avatar.MpSync.set_visibility_for(p, true)
+			avatar.rollback.visibility_filter.set_visibility_for(p, true)  
 	avatar.rollback.visibility_filter.update_visibility()
 
 func remove_from_level(id: int, avatar: CharacterBody3D) -> void:
@@ -199,7 +203,6 @@ func _on_child_added(node: Node) -> void:
 		return
 	avatars[peer_id] = node
 
-	# Set input authority for ALL players on ALL peers
 	var input := node.find_child("Input")
 	if input != null:
 		input.set_multiplayer_authority(peer_id)
@@ -207,10 +210,11 @@ func _on_child_added(node: Node) -> void:
 		var roll := node.find_child("RollbackSynchronizer")
 		if roll != null:
 			roll.process_settings()
-			roll.visibility_filter.default_visibility = false 
+			#roll.visibility_filter.default_visibility = false
+			# NOW safe to set visibility — everything is initialized
+			if multiplayer.is_server() and node.CurrentLevel != "":
+				add_to_level(node.CurrentLevel, peer_id, node)
 
-
-	# Only do local setup for our own player
 	if peer_id == multiplayer.get_unique_id():
 		if is_instance_valid(MainMenu):
 			MainMenu.queue_free()

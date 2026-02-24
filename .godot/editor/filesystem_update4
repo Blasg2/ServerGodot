@@ -4,8 +4,3 @@ res://Art/PsxChar/iusaf.tres
 res://Art/PsxChar/gariba.tres
 res://Art/PsxChar/joj.tres
 res://Art/PsxChar/lil.tres
-res://addons/phantom_camera/themes/theme.tres
-res://Maps/world.tscn
-res://characters/CharMesh.gd
-res://characters/hud.tscn
-res://characters/player.gd

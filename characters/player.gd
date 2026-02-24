@@ -24,6 +24,7 @@ func _ready():
 func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
+
 	if pending_teleport != Vector3.INF:
 		global_position = pending_teleport
 		velocity = Vector3.ZERO
@@ -53,8 +54,6 @@ func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
 	velocity /= NetworkTime.physics_factor
 
 func _process(delta: float) -> void:
-	if not input.is_multiplayer_authority():
-		print("Remote %s pos: %s vel: %s" % [name, global_position, velocity])
 	var flat_vel = Vector3(velocity.x, 0, velocity.z)
 	if flat_vel.length() > 0.1:
 		var target_angle = atan2(-flat_vel.z, flat_vel.x)
