@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://dttuiv1f866ua"]
+
+[ext_resource type="Script" uid="uid://dw23enk6foi28" path="res://characters/hud.gd" id="1_5jt0o"]
+[ext_resource type="Script" uid="uid://bhvgd06y1i625" path="res://Scripts/npc.gd" id="2_escne"]
+[ext_resource type="Script" uid="uid://co0lo02vnu10n" path="res://addons/font_auto_size_labels/auto_size_rich_text_label.gd" id="3_grmsp"]
+[ext_resource type="Script" uid="uid://vsdimn30u6yc" path="res://addons/virtual_joystick_plus/virtual_joystick_plus.gd" id="4_egd0o"]
+[ext_resource type="Texture2D" uid="uid://b5e2hdgdw6ulj" path="res://addons/virtual_joystick_plus/resources/textures/joystick_texture_5.png" id="5_3yxbx"]
+[ext_resource type="Texture2D" uid="uid://c314a3yampbhk" path="res://addons/virtual_joystick_plus/resources/textures/stick_texture_5.png" id="6_mrv8i"]
+
+[sub_resource type="GDScript" id="GDScript_egd0o"]
+resource_name = "ping"
+script/source = "extends Label
+
+func _process(_delta):
+	if multiplayer.get_unique_id() == 1:
+		text = \"Server\"
+		return
+	var peer = multiplayer.multiplayer_peer
+	if peer == null:
+		return
+	var peer_info = peer.get_peer(1)
+	if peer_info == null:
+		return
+	var rtt = peer_info.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
+	var loss_raw = peer_info.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS)
+	var loss_pct = loss_raw / 655.36
+	text = \"Ping: %d ms | Loss: %.1f%%\" % [rtt, loss_pct]
+"
+
+[node name="HUD" type="CanvasLayer" unique_id=1196462823]
+script = ExtResource("1_5jt0o")
+
+[node name="NpcChat" type="LineEdit" parent="." unique_id=2059504985]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -368.0
+offset_top = -161.0
+offset_right = 371.0
+offset_bottom = -99.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("2_escne")
+
+[node name="Temperatura" type="RichTextLabel" parent="." unique_id=1036051414]
+offset_left = 66.0
+offset_top = 51.0
+offset_right = 345.0
+offset_bottom = 215.0
+theme_override_constants/outline_size = 7
+theme_override_font_sizes/normal_font_size = 37
+text = "99 C-"
+scroll_active = false
+script = ExtResource("3_grmsp")
+_max_size = 37
+_min_size = 37
+_current_font_size = 37
+_editor_defaults_set = true
+metadata/_custom_type_script = "uid://co0lo02vnu10n"
+
+[node name="LeftJoy" type="Control" parent="." unique_id=859953322]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -300.0
+offset_right = 300.0
+grow_vertical = 0
+pivot_offset = Vector2(150, 150)
+script = ExtResource("4_egd0o")
+joystick_texture = ExtResource("5_3yxbx")
+stick_texture = ExtResource("6_mrv8i")
+
+[node name="RightJoy" type="Control" parent="." unique_id=1225317306]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+pivot_offset = Vector2(150, 150)
+script = ExtResource("4_egd0o")
+joystick_texture = ExtResource("5_3yxbx")
+stick_texture = ExtResource("6_mrv8i")
+
+[node name="ping" type="Label" parent="." unique_id=628772519]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -71.5
+offset_right = 229.0
+offset_bottom = 219.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 35
+text = "54fdf"
+script = SubResource("GDScript_egd0o")
+
+[connection signal="text_submitted" from="NpcChat" to="NpcChat" method="_on_text_submitted"]

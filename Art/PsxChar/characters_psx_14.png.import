@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://wv7vg6376dyx"
 path.s3tc="res://.godot/imported/characters_psx_14.png-f44ab2c7a1a86b7a5320ca7108cba53d.s3tc.ctex"
+path.etc2="res://.godot/imported/characters_psx_14.png-f44ab2c7a1a86b7a5320ca7108cba53d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Art/PsxChar/characters_psx_14.png"
-dest_files=["res://.godot/imported/characters_psx_14.png-f44ab2c7a1a86b7a5320ca7108cba53d.s3tc.ctex"]
+dest_files=["res://.godot/imported/characters_psx_14.png-f44ab2c7a1a86b7a5320ca7108cba53d.s3tc.ctex", "res://.godot/imported/characters_psx_14.png-f44ab2c7a1a86b7a5320ca7108cba53d.etc2.ctex"]
 
 [params]
 

@@ -6,12 +6,16 @@ extends LineEdit
 # This version makes CLIENT ask SERVER, and SERVER calls Ollama, then replies back to that CLIENT.
 
 func talk(player_text: String) -> void:
-	# CLIENT: ask server to generate NPC reply
 	if multiplayer and multiplayer.has_multiplayer_peer():
+		# ✅ If we are the server, just call Ollama directly
+		if multiplayer.is_server():
+			_call_ollama_local(player_text)
+			return
+
+		# CLIENT: ask server
 		rpc_id(1, "_server_npc_talk", npc_name, personality, player_text)
-		_show_dialogue("%s: Pensando..." % npc_name) # optional thinking
+		_show_dialogue("%s: Pensando..." % npc_name)
 	else:
-		# SINGLEPLAYER / no multiplayer peer: call locally
 		_call_ollama_local(player_text)
 
 func _call_ollama_local(player_text: String) -> void:

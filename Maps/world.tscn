@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://bfshwoko470di"]
+
+[ext_resource type="Script" uid="uid://by6n6nfiei2f2" path="res://Scripts/status.gd" id="1_qacqj"]
+[ext_resource type="Script" uid="uid://b7dcdxh4qdxwv" path="res://characters/player-spawner.gd" id="2_oeksg"]
+[ext_resource type="PackedScene" uid="uid://vrso6qncj1nm" path="res://characters/player.tscn" id="3_jlatx"]
+[ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://menu.gd" id="4_g6xbe"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ytjk5"]
+properties/0/path = NodePath(".:temp_c")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="World" type="Node" unique_id=436590645]
+script = ExtResource("1_qacqj")
+
+[node name="PlayerSpawn" type="MultiplayerSpawner" parent="." unique_id=463232178]
+_spawnable_scenes = PackedStringArray("uid://vrso6qncj1nm")
+spawn_path = NodePath("../Players")
+
+[node name="MapSpawn" type="MultiplayerSpawner" parent="." unique_id=1800856884]
+spawn_path = NodePath("../Maps")
+
+[node name="Players" type="Node" parent="." unique_id=255705867 node_paths=PackedStringArray("MainMenu")]
+script = ExtResource("2_oeksg")
+player_scene = ExtResource("3_jlatx")
+MainMenu = NodePath("../MainMenu")
+
+[node name="Maps" type="Node" parent="." unique_id=1525437376]
+
+[node name="MainMenu" type="Control" parent="." unique_id=844985072]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_g6xbe")
+
+[node name="ClientButton" type="Button" parent="MainMenu" unique_id=896434966]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -169.0
+offset_top = 32.0
+offset_right = 170.0
+offset_bottom = 164.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Login"
+
+[node name="User" type="LineEdit" parent="MainMenu" unique_id=1153221334]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -261.99994
+offset_top = -286.0
+offset_right = -84.39929
+offset_bottom = -235.01123
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2.9222865, 2.2512608)
+
+[node name="Password" type="LineEdit" parent="MainMenu" unique_id=282987421]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -247.0
+offset_top = -120.0
+offset_right = 247.0
+offset_bottom = -21.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=276714175]
+
+[node name="StatusSync" type="MultiplayerSynchronizer" parent="." unique_id=2050001423]
+replication_config = SubResource("SceneReplicationConfig_ytjk5")
+
+[connection signal="pressed" from="MainMenu/ClientButton" to="MainMenu" method="_on_client_button_pressed"]
+[connection signal="text_submitted" from="MainMenu/User" to="MainMenu" method="_on_user_text_submitted"]
+[connection signal="text_submitted" from="MainMenu/Password" to="MainMenu" method="_on_password_text_submitted"]

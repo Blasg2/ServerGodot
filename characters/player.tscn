@@ -1,0 +1,146 @@
+[gd_scene format=3 uid="uid://vrso6qncj1nm"]
+
+[ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="1_g0p7o"]
+[ext_resource type="Script" uid="uid://q46d8xjl1rpk" path="res://characters/player.gd" id="1_mk8qw"]
+[ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_3rc26"]
+[ext_resource type="Script" uid="uid://b0456tjm7q8ve" path="res://characters/CharMesh.gd" id="8_25y1x"]
+[ext_resource type="Script" uid="uid://bnyn3dyybrwkj" path="res://characters/player-input.gd" id="10_50d5g"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x1lbd"]
+radius = 0.20800781
+height = 1.6968842
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_li4lc"]
+properties/0/path = NodePath("Mesh:meshPath")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[sub_resource type="GDScript" id="GDScript_evndh"]
+resource_name = "camera_pivot"
+script/source = "extends Node3D
+@export var mouse_sensibility := 0.005
+@export_range(-90.0, 0.0, 0.1, \"radians_as_degrees\") var min_vertical_angle: float = -PI/2
+@export_range(0.0, 90.0, 0.1, \"radians_as_degrees\") var max_vertical_angle: float = PI/4
+@onready var spring_arm := $SpringArm3D
+@export var joy_sensitivity := 3.0
+var joy_look: Vector2 = Vector2.ZERO
+var _touches: Dictionary = {}
+
+func _ready() -> void:
+	control.joystick.connect(setJoy)
+
+func _input(event: InputEvent) -> void:
+	if $\"../Input\".is_multiplayer_authority():
+		if event is InputEventMouseMotion and not OS.has_feature(\"mobile\"):
+			rotation.y -= event.relative.x * mouse_sensibility
+			rotation.y = wrapf(rotation.y, 0.0, TAU)
+			rotation.x -= event.relative.y * mouse_sensibility
+			rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
+		
+		if event.is_action_pressed(\"wheel_up\"):
+			_zoom(-1)
+		if event.is_action_pressed(\"wheel_down\"):
+			_zoom(1)
+		
+		# Pinch to zoom
+		if event is InputEventScreenTouch:
+			if event.pressed:
+				_touches[event.index] = event.position
+			else:
+				_touches.erase(event.index)
+		
+		if event is InputEventScreenDrag and _touches.size() == 2:
+			var old_pos = _touches[event.index]
+			_touches[event.index] = event.position
+			var keys = _touches.keys()
+			var other_key = keys[0] if event.index == keys[1] else keys[1]
+			var old_dist = old_pos.distance_to(_touches[other_key])
+			var new_dist = _touches[keys[0]].distance_to(_touches[keys[1]])
+			var diff = new_dist - old_dist
+			if abs(diff) > 2.0:
+				_zoom(-sign(diff))
+
+func _process(delta: float) -> void:
+	if joy_look.length() > 0.1:
+		rotation.y -= joy_look.x * joy_sensitivity * delta
+		rotation.y = wrapf(rotation.y, 0.0, TAU)
+		rotation.x -= joy_look.y * joy_sensitivity * delta
+		rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
+
+func _zoom(dir: float) -> void:
+	spring_arm.spring_length = clamp(spring_arm.spring_length + dir * 0.5, 2.0, 5.0)
+
+func setJoy(a, b) -> void:
+	b.analogic_changed.connect(_on_right_joy_analogic_changed)
+
+func _on_right_joy_analogic_changed(value: Vector2, distance: float, angle: float, angle_clockwise: float, angle_not_clockwise: float) -> void:
+	joy_look = value
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_evndh"]
+radius = 0.7
+
+[sub_resource type="GDScript" id="GDScript_h1q25"]
+resource_name = "camera"
+script/source = "extends Camera3D
+
+@export var spring_arm: Node3D
+@export var lerp_power: float = 6.0
+
+
+func _process(delta: float) -> void:
+	position = lerp(position, spring_arm.position,delta*lerp_power)
+"
+
+[node name="player" type="CharacterBody3D" unique_id=2099362635]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_mk8qw")
+
+[node name="Input" type="Node" parent="." unique_id=1920213990]
+script = ExtResource("10_50d5g")
+mouse_sensitivity = 0.005
+
+[node name="RollbackSynchronizer" type="Node" parent="." unique_id=1396285752 node_paths=PackedStringArray("root")]
+script = ExtResource("1_g0p7o")
+root = NodePath("..")
+state_properties = Array[String]([":transform", ":velocity"])
+full_state_interval = 15
+input_properties = Array[String](["Input:movement", "Input:jump", "Input:camera_yaw"])
+enable_input_broadcast = false
+
+[node name="TickInterpolator" type="Node" parent="." unique_id=1526413239 node_paths=PackedStringArray("root")]
+script = ExtResource("2_3rc26")
+root = NodePath("..")
+properties = Array[String]([":transform"])
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=480938697]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00034070015, 0.80127025, -0.00062200427)
+shape = SubResource("CapsuleShape3D_x1lbd")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=540899234]
+replication_config = SubResource("SceneReplicationConfig_li4lc")
+visibility_update_mode = 2
+public_visibility = false
+
+[node name="Mesh" type="Node3D" parent="." unique_id=1887965358]
+transform = Transform3D(-1.5401328e-08, -0.3523413, -5.7403692e-08, 0, -5.7403692e-08, 0.3523413, -0.3523413, 1.5401328e-08, 2.5091951e-15, 0, 0, 0)
+script = ExtResource("8_25y1x")
+
+[node name="meshy" type="MeshInstance3D" parent="Mesh" unique_id=1029742667]
+skeleton = NodePath("")
+
+[node name="SpringArmPivot" type="Node3D" parent="." unique_id=1413166376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3908092, 0.8579666)
+script = SubResource("GDScript_evndh")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="SpringArmPivot" unique_id=1907814196]
+collision_mask = 0
+shape = SubResource("SphereShape3D_evndh")
+spring_length = 3.0
+
+[node name="SpringPosition" type="Node3D" parent="SpringArmPivot/SpringArm3D" unique_id=1322501709]
+
+[node name="Camera3D" type="Camera3D" parent="SpringArmPivot" unique_id=124851159 node_paths=PackedStringArray("spring_arm")]
+script = SubResource("GDScript_h1q25")
+spring_arm = NodePath("../SpringArm3D/SpringPosition")

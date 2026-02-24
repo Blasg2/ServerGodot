@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dk5nh0g0do25q"
 path.s3tc="res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.s3tc.ctex"
+path.etc2="res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Meshy_AI_biped/Meshy_AI_Meshy_Merged_Animations_texture_0.png"
-dest_files=["res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.s3tc.ctex"]
+dest_files=["res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.s3tc.ctex", "res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.etc2.ctex"]
 
 [params]
 
