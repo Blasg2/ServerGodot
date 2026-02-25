@@ -4,8 +4,9 @@ extends CharacterBody3D
 
 @onready var input := $Input as PlayerInputFPS
 @onready var MpSync := $MultiplayerSynchronizer
-@onready var rollback: RollbackSynchronizer = $RollbackSynchronizer
 @onready var mesh := $Mesh
+@onready var state_sync: StateSynchronizer = $StateSynchronizer
+
 
 var hudLoad := load("res://characters/hud.tscn")
 var pending_teleport: Vector3 = Vector3.INF
@@ -20,11 +21,14 @@ func _ready():
 	if input.is_multiplayer_authority() or multiplayer.is_server():
 		var hud = hudLoad.instantiate()
 		add_child(hud)
+	
+	if multiplayer.is_server():
+		NetworkTime.on_tick.connect(_server_tick)
 
-func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
+func _server_tick(_delta: float, _tick: int) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
-
+	
 	if pending_teleport != Vector3.INF:
 		global_position = pending_teleport
 		velocity = Vector3.ZERO
@@ -37,7 +41,7 @@ func _rollback_tick(delta: float, tick: int, is_fresh: bool) -> void:
 		if input.jump:
 			velocity.y = jump_strength
 	else:
-		velocity.y -= gravity * delta
+		velocity.y -= gravity * NetworkTime.ticktime
 
 	var direction = Vector3(input.movement.x, 0, input.movement.z)
 	direction = direction.rotated(Vector3.UP, input.camera_yaw)

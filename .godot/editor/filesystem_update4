@@ -4,3 +4,6 @@ res://Art/PsxChar/iusaf.tres
 res://Art/PsxChar/gariba.tres
 res://Art/PsxChar/joj.tres
 res://Art/PsxChar/lil.tres
+res://characters/player-input.gd
+res://characters/player.gd
+res://characters/player-spawner.gd

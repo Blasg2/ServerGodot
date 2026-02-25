@@ -1,6 +1,8 @@
-extends BaseNetInput
+extends Node
 class_name PlayerInputFPS
+
 @export var mouse_sensitivity: float = 0.7
+
 var is_setup: bool = false
 var override_mouse: bool = false
 var mouse_rotation: Vector2 = Vector2.ZERO
@@ -8,12 +10,10 @@ var look_angle: Vector2 = Vector2.ZERO
 var movement: Vector3 = Vector3.ZERO
 var jump: bool = false
 var camera_yaw: float = 0.0
-
 var joy_movement: Vector2 = Vector2.ZERO
 
 func _enter_tree() -> void:
 	control.joystick.connect(setJoy)
-
 
 func _input(event: InputEvent) -> void:
 	if multiplayer.multiplayer_peer == null:
@@ -27,11 +27,14 @@ func _input(event: InputEvent) -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 			override_mouse = false
 
-func _gather():
-	if !is_setup:
+func _process(_delta: float) -> void:
+	if not is_multiplayer_authority():
+		return
+	
+	if not is_setup:
 		setup()
 	
-	# Keyboard + joystick combined
+	# Gather input (same logic as old _gather)
 	movement = Vector3(
 		Input.get_axis("move_west", "move_east") + joy_movement.x,
 		0,
@@ -45,16 +48,27 @@ func _gather():
 	var pivot = get_node_or_null("../SpringArmPivot")
 	if pivot:
 		camera_yaw = pivot.global_rotation.y
+	
+	# Send to server
+	_send_input.rpc_id(1, movement, jump, camera_yaw)
+
+@rpc("authority", "unreliable_ordered", "call_remote")
+func _send_input(mv: Vector3, jmp: bool, yaw: float) -> void:
+	# Runs on server — update the variables the server reads
+	movement = mv
+	jump = jmp
+	camera_yaw = yaw
 
 func setup():
 	is_setup = true
 	var cam = get_node_or_null("../SpringArmPivot/Camera3D")
 	if cam:
 		cam.current = true
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if not OS.has_feature("mobile"):
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-func setJoy(a,b)->void:
+func setJoy(a, b) -> void:
 	a.analogic_changed.connect(_on_left_joy_analogic_changed)
 
-func _on_left_joy_analogic_changed(value: Vector2, distance: float, angle: float, angle_clockwise: float, angle_not_clockwise: float) -> void:
+func _on_left_joy_analogic_changed(value: Vector2, _distance: float, _angle: float, _angle_clockwise: float, _angle_not_clockwise: float) -> void:
 	joy_movement = value

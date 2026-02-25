@@ -138,25 +138,25 @@ func add_to_level(levelName: String, id: int, avatar: CharacterBody3D) -> void:
 	# Loop 1: existing players send state TO new player
 	for p in loadedLevels[levelName].playersOnLevel.values():
 		p.MpSync.set_visibility_for(id, true)
-		p.rollback.visibility_filter.set_visibility_for(id, true)
-		p.rollback.visibility_filter.update_visibility()
+		p.state_sync.visibility_filter.set_visibility_for(id, true)
+		p.state_sync.visibility_filter.update_visibility()
 	# Loop 2: new player sends state TO existing players
 	for p in loadedLevels[levelName].playersOnLevel:
 		if p != id:
 			avatar.MpSync.set_visibility_for(p, true)
-			avatar.rollback.visibility_filter.set_visibility_for(p, true)  
-	avatar.rollback.visibility_filter.update_visibility()
+			avatar.state_sync.visibility_filter.set_visibility_for(p, true)
+	avatar.state_sync.visibility_filter.update_visibility()
 
 func remove_from_level(id: int, avatar: CharacterBody3D) -> void:
 	for p in loadedLevels[avatar.CurrentLevel].playersOnLevel.values():
-		p.rollback.visibility_filter.set_visibility_for(id, false)
-		p.rollback.visibility_filter.update_visibility()
+		p.state_sync.visibility_filter.set_visibility_for(id, false)
+		p.state_sync.visibility_filter.update_visibility()
 		p.MpSync.set_visibility_for(id, false)
 	for p in loadedLevels[avatar.CurrentLevel].playersOnLevel:
 		if p != id:
-			avatar.rollback.visibility_filter.set_visibility_for(p, false)
+			avatar.state_sync.visibility_filter.set_visibility_for(p, false)
 			avatar.MpSync.set_visibility_for(p, false)
-	avatar.rollback.visibility_filter.update_visibility()
+	avatar.state_sync.visibility_filter.update_visibility()
 	loadedLevels[avatar.CurrentLevel].playersOnLevel.erase(id)
 	
 	
@@ -196,7 +196,7 @@ func despawn_player(peer_id: int) -> void:
 
 ##Runs on enter_tree
 func _on_child_added(node: Node) -> void:
-	if not node.has_method("_rollback_tick"):
+	if not node is CharacterBody3D:
 		return
 	var peer_id := node.name.to_int()
 	if peer_id == 0:
@@ -207,11 +207,10 @@ func _on_child_added(node: Node) -> void:
 	if input != null:
 		input.set_multiplayer_authority(peer_id)
 		await get_tree().process_frame
-		var roll := node.find_child("RollbackSynchronizer")
-		if roll != null:
-			roll.process_settings()
-			#roll.visibility_filter.default_visibility = false
-			# NOW safe to set visibility — everything is initialized
+		var state_sync = node.find_child("StateSynchronizer")
+		if state_sync != null:
+			state_sync.process_settings()
+			state_sync.visibility_filter.default_visibility = false
 			if multiplayer.is_server() and node.CurrentLevel != "":
 				add_to_level(node.CurrentLevel, peer_id, node)
 
