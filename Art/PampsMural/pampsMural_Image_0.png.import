@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dk5nh0g0do25q"
-path.s3tc="res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.s3tc.ctex"
-path.etc2="res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.etc2.ctex"
+uid="uid://bsfr05s80ve4u"
+path.s3tc="res://.godot/imported/pampsMural_Image_0.png-acb4594a780676739619c41283c99217.s3tc.ctex"
+path.etc2="res://.godot/imported/pampsMural_Image_0.png-acb4594a780676739619c41283c99217.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "a8acacc78d9a11d8b4bef279aea49f9f"
+"md5": "6504148059a15fea8bda060ecc1c08d5"
 }
 
 [deps]
 
-source_file="res://Meshy_AI_biped/Meshy_AI_Meshy_Merged_Animations_texture_0.png"
-dest_files=["res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.s3tc.ctex", "res://.godot/imported/Meshy_AI_Meshy_Merged_Animations_texture_0.png-8fce0b38a5d1748592eb50437c325865.etc2.ctex"]
+source_file="res://Art/PampsMural/pampsMural_Image_0.png"
+dest_files=["res://.godot/imported/pampsMural_Image_0.png-acb4594a780676739619c41283c99217.s3tc.ctex", "res://.godot/imported/pampsMural_Image_0.png-acb4594a780676739619c41283c99217.etc2.ctex"]
 
 [params]
 

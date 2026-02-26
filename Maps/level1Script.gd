@@ -8,6 +8,11 @@ func _ready() -> void:
 		$"../SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
 		$"../Esfera".talk($"../SubViewport/Chat".text)
 
+@rpc ("any_peer", "reliable")
+func refreshChat()->void:
+	if multiplayer.is_server():
+		$"../SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
+		$"../Esfera".talk($"../SubViewport/Chat".text)
 
 func pegar_parte_do_chat(chat: String) -> String:
 	var lines := chat.split("\n", false)

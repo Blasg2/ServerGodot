@@ -35,6 +35,7 @@ NetworkCommandServer="*res://addons/netfox/servers/network-command-server.gd"
 NetworkManager="*uid://4nfm7km0c3lb"
 Ollama="*uid://dqmjqyg5t1lsb"
 control="*uid://dvqs7px0tmp1o"
+PhantomCameraManager="*uid://duq6jhf6unyis"
 
 [display]
 
@@ -47,7 +48,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
+enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
 
 [file_customization]
 

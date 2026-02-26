@@ -53,4 +53,4 @@ func _client_npc_reply(_npc_name: String, answer: String) -> void:
 	_show_dialogue("%s: %s" % [_npc_name, answer.strip_edges()])
 
 func _show_dialogue(texte: String) -> void:
-	print(texte)
+	$"../SubViewCOMMENT/Comment".text = texte

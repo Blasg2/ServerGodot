@@ -2,6 +2,7 @@ extends Node
 
 @export var default_port: int = 7777
 @export var max_players: int = 99
+@export var server_ip := "201.17.248.223"
 
 var peer := ENetMultiplayerPeer.new()
 
@@ -23,7 +24,7 @@ func start_server(port: int = default_port) -> void:
 	multiplayer.multiplayer_peer = peer
 	print("Server started on port ", port)
 
-func connect_to_server(address: String = "201.17.248.223", port: int = default_port) -> void:
+func connect_to_server(address: String = server_ip, port: int = default_port) -> void:
 	peer.create_client(address, port)
 	multiplayer.multiplayer_peer = peer
 
@@ -44,10 +45,10 @@ func _receive_login(username: String, password: String) -> void:
 	var sender_id = multiplayer.get_remote_sender_id()
 	var account = Authentication.validate_login(username, password)
 	if account.is_empty():
-		rpc_id(sender_id, "_login_response", false, {}, "Invalid credentials")
+		rpc_id(sender_id, "_login_response", false, {}, "Senha incorreta.")
 		return
 	if online_usernames.has(username):
-		rpc_id(sender_id, "_login_response", false, {}, "User already logged in")
+		rpc_id(sender_id, "_login_response", false, {}, "Player já está logado.")
 		return
 	authenticated_players[sender_id] = account
 	online_usernames[username] = sender_id

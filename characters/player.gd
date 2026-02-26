@@ -7,15 +7,11 @@ extends CharacterBody3D
 @onready var mesh := $Mesh
 @onready var state_sync: StateSynchronizer = $StateSynchronizer
 
-
 var hudLoad := load("res://characters/hud.tscn")
-var pending_teleport: Vector3 = Vector3.INF
 var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
 var username: String
 var CurrentLevel: String
 
-func server_teleport(pos: Vector3) -> void:
-	pending_teleport = pos
 
 func _ready():
 	if input.is_multiplayer_authority() or multiplayer.is_server():
@@ -25,17 +21,10 @@ func _ready():
 	if multiplayer.is_server():
 		NetworkTime.on_tick.connect(_server_tick)
 
+
 func _server_tick(_delta: float, _tick: int) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
-	
-	if pending_teleport != Vector3.INF:
-		global_position = pending_teleport
-		velocity = Vector3.ZERO
-		pending_teleport = Vector3.INF
-		return
-
-	_force_update_is_on_floor()
 
 	if is_on_floor():
 		if input.jump:
@@ -57,17 +46,12 @@ func _server_tick(_delta: float, _tick: int) -> void:
 	move_and_slide()
 	velocity /= NetworkTime.physics_factor
 
+
 func _process(delta: float) -> void:
 	var flat_vel = Vector3(velocity.x, 0, velocity.z)
 	if flat_vel.length() > 0.1:
 		var target_angle = atan2(-flat_vel.z, flat_vel.x)
 		mesh.rotation.y = lerp_angle(mesh.rotation.y, target_angle, 10.0 * delta)
-
-func _force_update_is_on_floor():
-	var old_velocity = velocity
-	velocity = Vector3.ZERO
-	move_and_slide()
-	velocity = old_velocity
 
 func get_player_id() -> int:
 	return input.get_multiplayer_authority()

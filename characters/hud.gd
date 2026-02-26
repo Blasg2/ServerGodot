@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 
-@onready var world = 	get_node("/root/World")
+@onready var world = get_node("/root/World")
 
 
 func _ready() -> void:

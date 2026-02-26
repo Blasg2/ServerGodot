@@ -7,3 +7,13 @@ res://Art/PsxChar/lil.tres
 res://characters/player-input.gd
 res://characters/player.gd
 res://characters/player-spawner.gd
+res://Maps/level1.tscn
+res://Maps/chelala.gd
+res://Maps/world.tscn
+res://Scripts/status.gd
+res://characters/hud.gd
+res://characters/hud.tscn
+res://Maps/level1Script.gd
+res://characters/CharMesh.gd
+res://Scripts/network_manager.gd
+res://addons/phantom_camera/themes/theme.tres

@@ -28,8 +28,7 @@ func _ready() -> void:
 		t.timeout.connect(fetch_bh_weather)
 		fetch_bh_weather()	
 		
-
-
+		
 
 func fetch_bh_weather() -> void:
 	req.request("https://api.open-meteo.com/v1/forecast?latitude=-19.9167&longitude=-43.9345&current=temperature_2m&timezone=America%2FSao_Paulo")

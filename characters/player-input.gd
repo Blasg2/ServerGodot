@@ -62,6 +62,7 @@ func _send_input(mv: Vector3, jmp: bool, yaw: float) -> void:
 func setup():
 	is_setup = true
 	var cam = get_node_or_null("../SpringArmPivot/Camera3D")
+	cam.current = true
 	if cam:
 		cam.current = true
 	if not OS.has_feature("mobile"):

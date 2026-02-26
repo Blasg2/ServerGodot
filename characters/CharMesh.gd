@@ -21,3 +21,4 @@ func _ready() -> void:
 			meshPath = "res://Art/PsxChar/joj.tres"
 		if player.username == "dave":
 			meshPath = "res://Art/PsxChar/lil.tres"
+			

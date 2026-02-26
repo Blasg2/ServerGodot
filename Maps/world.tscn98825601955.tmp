@@ -4,55 +4,39 @@
 [ext_resource type="Script" uid="uid://b7dcdxh4qdxwv" path="res://characters/player-spawner.gd" id="2_oeksg"]
 [ext_resource type="PackedScene" uid="uid://vrso6qncj1nm" path="res://characters/player.tscn" id="3_jlatx"]
 [ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://menu.gd" id="4_g6xbe"]
-[ext_resource type="Script" uid="uid://co0lo02vnu10n" path="res://addons/font_auto_size_labels/auto_size_rich_text_label.gd" id="5_oeksg"]
 
 [sub_resource type="GDScript" id="GDScript_qacqj"]
 resource_name = "CheckServer"
-script/source = "extends Label
+script/source = "	extends Label
 
-@export var port = 7777
-@export var ip := \"201.17.248.223\"
+	var _checker: StreamPeerTCP
 
-var _checker: ENetMultiplayerPeer
-var _timeout: float = 0.0
-var _refresh_timer: float = 0.0
-const TIMEOUT_SECONDS := 3.0
-const REFRESH_SECONDS := 5.0
+	func _ready():
+		_check_server()
 
-func _ready():
-	text = \"Checando server...\"
-	_check_server()
+	func _check_server():
+		text = \"Checando server...\"
+		_checker = StreamPeerTCP.new()
+		_checker.connect_to_host(\"201.17.248.223\", 7777)
 
-func _check_server():
-	_timeout = 0.0
-	_checker = ENetMultiplayerPeer.new()
-	var err = _checker.create_client(ip, port)
-	if err != OK:
-		text = \"Server: Offline\"
-		modulate = Color.RED
-		_checker = null
-
-func _process(delta):
-	if _checker != null:
+	func _process(_delta):
+		if _checker == null:
+			return
 		_checker.poll()
-		_timeout += delta
-		var status = _checker.get_connection_status()
-		if status == MultiplayerPeer.CONNECTION_CONNECTED:
+		var status = _checker.get_status()
+		if status == StreamPeerTCP.STATUS_CONNECTED:
 			text = \"Server: Online\"
 			modulate = Color.GREEN
-			_checker.close()
+			_checker.disconnect_from_host()
 			_checker = null
-			_refresh_timer = 0.0
-		elif status == MultiplayerPeer.CONNECTION_DISCONNECTED or _timeout > TIMEOUT_SECONDS:
+		elif status == StreamPeerTCP.STATUS_ERROR:
 			text = \"Server: Offline\"
 			modulate = Color.RED
-			_checker.close()
 			_checker = null
-			_refresh_timer = 0.0
-	else:
-		_refresh_timer += delta
-		if _refresh_timer >= REFRESH_SECONDS:
-			_check_server()
+
+	# Optional: recheck periodically
+	func _on_timer_timeout():
+		_check_server()
 "
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ytjk5"]
@@ -130,42 +114,13 @@ offset_bottom = -21.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ServerStatus" type="Label" parent="MainMenu" unique_id=1135931266]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -285.0
-offset_top = 73.0
-offset_right = -50.0
-offset_bottom = 160.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 30
-text = "ServeR: Online..."
+[node name="Label" type="Label" parent="MainMenu" unique_id=1135931266]
+layout_mode = 0
+offset_left = 1619.0
+offset_top = 58.0
+offset_right = 1854.0
+offset_bottom = 145.0
 script = SubResource("GDScript_qacqj")
-
-[node name="Log" type="RichTextLabel" parent="MainMenu" unique_id=1849580195]
-modulate = Color(0.9416386, 0.1983059, 0, 1)
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -296.0
-offset_top = -320.0
-offset_right = 297.0
-offset_bottom = -184.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_constants/outline_size = 10
-theme_override_font_sizes/normal_font_size = 50
-scroll_active = false
-script = ExtResource("5_oeksg")
-_max_size = 50
-_current_font_size = 50
-_editor_defaults_set = true
-metadata/_custom_type_script = "uid://co0lo02vnu10n"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=276714175]
 

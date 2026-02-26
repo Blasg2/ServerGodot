@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bq70f3gj136bd"
-path="res://.godot/imported/Meshy_AI_Meshy_Merged_Animations.glb-d597e6b4d5ae11771c8a487581099fdf.scn"
+uid="uid://b0eqcsjie0bk6"
+path="res://.godot/imported/pampsMural.glb-74b9a50274df8fbfac31c42bb62f235c.scn"
 
 [deps]
 
-source_file="res://Meshy_AI_biped/Meshy_AI_Meshy_Merged_Animations.glb"
-dest_files=["res://.godot/imported/Meshy_AI_Meshy_Merged_Animations.glb-d597e6b4d5ae11771c8a487581099fdf.scn"]
+source_file="res://Art/PampsMural/pampsMural.glb"
+dest_files=["res://.godot/imported/pampsMural.glb-74b9a50274df8fbfac31c42bb62f235c.scn"]
 
 [params]
 

@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://vsdimn30u6yc" path="res://addons/virtual_joystick_plus/virtual_joystick_plus.gd" id="4_egd0o"]
 [ext_resource type="Texture2D" uid="uid://b5e2hdgdw6ulj" path="res://addons/virtual_joystick_plus/resources/textures/joystick_texture_5.png" id="5_3yxbx"]
 [ext_resource type="Texture2D" uid="uid://c314a3yampbhk" path="res://addons/virtual_joystick_plus/resources/textures/stick_texture_5.png" id="6_mrv8i"]
+[ext_resource type="Texture2D" uid="uid://cdb8di7e1p6h6" path="res://icon.png" id="7_3yxbx"]
 
 [sub_resource type="GDScript" id="GDScript_egd0o"]
 resource_name = "ping"
@@ -89,6 +90,11 @@ pivot_offset = Vector2(150, 150)
 script = ExtResource("4_egd0o")
 joystick_texture = ExtResource("5_3yxbx")
 stick_texture = ExtResource("6_mrv8i")
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="RightJoy" unique_id=363855251]
+position = Vector2(85, -144)
+texture_normal = ExtResource("7_3yxbx")
+action = "move_jump"
 
 [node name="ping" type="Label" parent="." unique_id=628772519]
 anchors_preset = 5

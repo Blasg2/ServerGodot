@@ -2,10 +2,7 @@
 
 [ext_resource type="Script" uid="uid://q46d8xjl1rpk" path="res://characters/player.gd" id="1_mk8qw"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_3rc26"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="6_6t23p"]
 [ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="6_h1q25"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="6_j31ep"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_6t23p"]
 [ext_resource type="Script" uid="uid://b0456tjm7q8ve" path="res://characters/CharMesh.gd" id="8_25y1x"]
 [ext_resource type="Script" uid="uid://bnyn3dyybrwkj" path="res://characters/player-input.gd" id="10_50d5g"]
 
@@ -74,7 +71,7 @@ func _process(delta: float) -> void:
 		rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
 
 func _zoom(dir: float) -> void:
-	spring_arm.spring_length = clamp(spring_arm.spring_length + dir * 0.5, 2.0, 5.0)
+	spring_arm.spring_length = clamp(spring_arm.spring_length + dir )
 
 func setJoy(a, b) -> void:
 	b.analogic_changed.connect(_on_right_joy_analogic_changed)
@@ -97,9 +94,6 @@ script/source = "extends Camera3D
 func _process(delta: float) -> void:
 	position = lerp(position, spring_arm.position,delta*lerp_power)
 "
-
-[sub_resource type="Resource" id="Resource_n8jd0"]
-script = ExtResource("7_6t23p")
 
 [node name="player" type="CharacterBody3D" unique_id=2099362635]
 collision_layer = 3
@@ -134,6 +128,10 @@ skeleton = NodePath("")
 [node name="SpringArmPivot" type="Node3D" parent="." unique_id=1413166376]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3908092, 0.8579666)
 script = SubResource("GDScript_evndh")
+mouse_sensibility = null
+min_vertical_angle = null
+max_vertical_angle = null
+joy_sensitivity = null
 
 [node name="SpringArm3D" type="SpringArm3D" parent="SpringArmPivot" unique_id=1907814196]
 collision_mask = 0
@@ -143,17 +141,8 @@ spring_length = 3.0
 [node name="SpringPosition" type="Node3D" parent="SpringArmPivot/SpringArm3D" unique_id=1322501709]
 
 [node name="Camera3D" type="Camera3D" parent="SpringArmPivot" unique_id=124851159 node_paths=PackedStringArray("spring_arm")]
-physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.99026805, 0.13917315, 0, -0.13917315, 0.99026805, 0, 1.7991731, 1.4752681)
-top_level = true
 script = SubResource("GDScript_h1q25")
 spring_arm = NodePath("../SpringArm3D/SpringPosition")
-
-[node name="PhantomCameraHost" type="Node" parent="SpringArmPivot/Camera3D" unique_id=2142886268]
-process_priority = 300
-process_physics_priority = 300
-script = ExtResource("6_6t23p")
-metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="StateSynchronizer" type="Node" parent="." unique_id=419156574 node_paths=PackedStringArray("root")]
 script = ExtResource("6_h1q25")
@@ -161,15 +150,3 @@ root = NodePath("..")
 properties = Array[String]([":transform", ":velocity"])
 full_state_interval = 30
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
-
-[node name="PhantomCamera3D" type="Node3D" parent="." unique_id=1105900137 node_paths=PackedStringArray("follow_target")]
-transform = Transform3D(1, 0, 0, 0, 0.99026805, 0.13917315, 0, -0.13917315, 0.99026805, 0, 1.7991731, 1.4752681)
-script = ExtResource("6_j31ep")
-follow_mode = 6
-follow_target = NodePath("..")
-tween_resource = SubResource("Resource_n8jd0")
-follow_offset = Vector3(0, 1.66, 0.485)
-vertical_rotation_offset = 0.13962634015954636
-align_transform_with_view = Callable()
-align_position_with_view = Callable()
-align_rotation_with_view = Callable()

@@ -13,7 +13,6 @@ var _login_flow_started := false
 
 var allLevels = ["res://Maps/level1.tscn", "res://Maps/casa.tscn"]
 var loadedLevels = {}
-var pending_positions: Dictionary = {}  # {peer_id: Vector3}
 
 
 signal auth_done(success: bool)
@@ -60,6 +59,7 @@ func _on_login_success(_account_data: Dictionary) -> void:
 
 func _on_login_fail(reason: String) -> void:
 	print("Login failed: ", reason)
+	$"../MainMenu/Log".text = reason
 	NetworkTime.stop()
 	if multiplayer.multiplayer_peer:
 		multiplayer.multiplayer_peer.close()
@@ -128,19 +128,17 @@ func spawn_player(peer_id: int, levelName: String) -> void:
 	# REMOVED: add_to_level call — now happens in _on_child_added
 
 
-func add_to_level(levelName: String, id: int, avatar: CharacterBody3D) -> void:
+func add_to_level(levelName: String, id: int, avatar: CharacterBody3D, pos: Vector3 = Vector3.INF) -> void:
 	avatar.CurrentLevel = levelName
-	if pending_positions.has(id):
-		avatar.server_teleport(pending_positions[id])
-		pending_positions.erase(id)
+	if pos != Vector3.INF:
+		avatar.global_position = pos
+		avatar.velocity = Vector3.ZERO
 	
 	loadedLevels[levelName].playersOnLevel[id] = avatar
-	# Loop 1: existing players send state TO new player
 	for p in loadedLevels[levelName].playersOnLevel.values():
 		p.MpSync.set_visibility_for(id, true)
 		p.state_sync.visibility_filter.set_visibility_for(id, true)
 		p.state_sync.visibility_filter.update_visibility()
-	# Loop 2: new player sends state TO existing players
 	for p in loadedLevels[levelName].playersOnLevel:
 		if p != id:
 			avatar.MpSync.set_visibility_for(p, true)
@@ -161,17 +159,14 @@ func remove_from_level(id: int, avatar: CharacterBody3D) -> void:
 	
 	
 @rpc("any_peer", "reliable")
-func change_level(NextLevel: String, pos: Vector3)->void:
+func change_level(NextLevel: String, pos: Vector3) -> void:
 	var id = multiplayer.get_remote_sender_id()
 	var avatar = avatars[id]
 	remove_from_level(id, avatar)
 	avatar.process_mode = Node.PROCESS_MODE_DISABLED
 	loadedLevels[avatar.CurrentLevel].MpSync.set_visibility_for(id, false)
-	pending_positions[id] = pos
 	loadedLevels[NextLevel].MpSync.set_visibility_for(id, true)
-
-
-
+	add_to_level(NextLevel, id, avatar, pos)
 
 
 func despawn_player(peer_id: int) -> void:
