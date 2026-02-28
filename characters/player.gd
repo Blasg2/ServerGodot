@@ -13,10 +13,24 @@ var username: String
 var CurrentLevel: String
 
 
+func _notification(what):
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		afkRefresh.rpc_id(1, true)
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		afkRefresh.rpc_id(1, false)
+
+@rpc ("any_peer", "reliable", "call_remote")
+func afkRefresh(afk: bool)->void:
+	if afk:
+		$Afk.text = "AFK"
+	else:
+		$Afk.text = ""
+
 func _ready():
 	if input.is_multiplayer_authority() or multiplayer.is_server():
 		var hud = hudLoad.instantiate()
 		add_child(hud)
+		get_node("/root/World/Loading").hide()
 	
 	if multiplayer.is_server():
 		NetworkTime.on_tick.connect(_server_tick)
@@ -25,7 +39,7 @@ func _ready():
 func _server_tick(_delta: float, _tick: int) -> void:
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		return
-
+		
 	if is_on_floor():
 		if input.jump:
 			velocity.y = jump_strength

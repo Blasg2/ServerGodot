@@ -62,13 +62,12 @@ func _send_input(mv: Vector3, jmp: bool, yaw: float) -> void:
 func setup():
 	is_setup = true
 	var cam = get_node_or_null("../SpringArmPivot/Camera3D")
-	cam.current = true
 	if cam:
 		cam.current = true
 	if not OS.has_feature("mobile"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-func setJoy(a, b) -> void:
+func setJoy(a, _b) -> void:
 	a.analogic_changed.connect(_on_left_joy_analogic_changed)
 
 func _on_left_joy_analogic_changed(value: Vector2, _distance: float, _angle: float, _angle_clockwise: float, _angle_not_clockwise: float) -> void:

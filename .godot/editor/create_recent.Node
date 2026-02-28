@@ -1,5 +1,8 @@
-Camera3D
 Label
+ProgressBar
+TextureRect
+Label3D
+Camera3D
 ShapeCast3D
 SubViewport
 Sprite3D
@@ -9,6 +12,3 @@ Node
 Node3D
 SpringArm3D
 OmniLight3D
-MultiplayerSynchronizer
-HTTPRequest
-LineEdit

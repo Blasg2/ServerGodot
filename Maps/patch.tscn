@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://cxbvhr1imwuq3"]
+
+[ext_resource type="Script" uid="uid://c3dy1x0y5e1g6" path="res://Maps/boot.gd" id="1_xc85t"]
+
+[node name="Patch" type="Control" unique_id=1155602862]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xc85t")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=358671563]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -507.0
+offset_top = -85.0
+offset_right = 465.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatusLabel" type="Label" parent="ProgressBar" unique_id=586551035]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -477.0
+offset_top = 83.5
+offset_right = 478.0
+offset_bottom = 201.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 35
+text = "Downloading..."
+horizontal_alignment = 1

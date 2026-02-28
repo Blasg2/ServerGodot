@@ -3,57 +3,8 @@
 [ext_resource type="Script" uid="uid://by6n6nfiei2f2" path="res://Scripts/status.gd" id="1_qacqj"]
 [ext_resource type="Script" uid="uid://b7dcdxh4qdxwv" path="res://characters/player-spawner.gd" id="2_oeksg"]
 [ext_resource type="PackedScene" uid="uid://vrso6qncj1nm" path="res://characters/player.tscn" id="3_jlatx"]
-[ext_resource type="Script" uid="uid://cwhvo44anvrlw" path="res://menu.gd" id="4_g6xbe"]
-[ext_resource type="Script" uid="uid://co0lo02vnu10n" path="res://addons/font_auto_size_labels/auto_size_rich_text_label.gd" id="5_oeksg"]
-
-[sub_resource type="GDScript" id="GDScript_qacqj"]
-resource_name = "CheckServer"
-script/source = "extends Label
-
-@export var port = 7777
-@export var ip := \"201.17.248.223\"
-
-var _checker: ENetMultiplayerPeer
-var _timeout: float = 0.0
-var _refresh_timer: float = 0.0
-const TIMEOUT_SECONDS := 3.0
-const REFRESH_SECONDS := 5.0
-
-func _ready():
-	text = \"Checando server...\"
-	_check_server()
-
-func _check_server():
-	_timeout = 0.0
-	_checker = ENetMultiplayerPeer.new()
-	var err = _checker.create_client(ip, port)
-	if err != OK:
-		text = \"Server: Offline\"
-		modulate = Color.RED
-		_checker = null
-
-func _process(delta):
-	if _checker != null:
-		_checker.poll()
-		_timeout += delta
-		var status = _checker.get_connection_status()
-		if status == MultiplayerPeer.CONNECTION_CONNECTED:
-			text = \"Server: Online\"
-			modulate = Color.GREEN
-			_checker.close()
-			_checker = null
-			_refresh_timer = 0.0
-		elif status == MultiplayerPeer.CONNECTION_DISCONNECTED or _timeout > TIMEOUT_SECONDS:
-			text = \"Server: Offline\"
-			modulate = Color.RED
-			_checker.close()
-			_checker = null
-			_refresh_timer = 0.0
-	else:
-		_refresh_timer += delta
-		if _refresh_timer >= REFRESH_SECONDS:
-			_check_server()
-"
+[ext_resource type="PackedScene" uid="uid://b4adlv2wn7pwd" path="res://Maps/main_menu.tscn" id="4_qacqj"]
+[ext_resource type="Texture2D" uid="uid://dw0ei7vpf83f3" path="res://Art/Carregando.png" id="5_oeksg"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ytjk5"]
 properties/0/path = NodePath(".:temp_c")
@@ -77,101 +28,27 @@ MainMenu = NodePath("../MainMenu")
 
 [node name="Maps" type="Node" parent="." unique_id=1525437376]
 
-[node name="MainMenu" type="Control" parent="." unique_id=844985072]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("4_g6xbe")
-
-[node name="ClientButton" type="Button" parent="MainMenu" unique_id=896434966]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -169.0
-offset_top = 32.0
-offset_right = 170.0
-offset_bottom = 164.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Login"
-
-[node name="User" type="LineEdit" parent="MainMenu" unique_id=1153221334]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -261.99994
-offset_top = -286.0
-offset_right = -84.39929
-offset_bottom = -235.01123
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(2.9222865, 2.2512608)
-
-[node name="Password" type="LineEdit" parent="MainMenu" unique_id=282987421]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -247.0
-offset_top = -120.0
-offset_right = 247.0
-offset_bottom = -21.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ServerStatus" type="Label" parent="MainMenu" unique_id=1135931266]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -285.0
-offset_top = 73.0
-offset_right = -50.0
-offset_bottom = 160.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 30
-text = "ServeR: Online..."
-script = SubResource("GDScript_qacqj")
-
-[node name="Log" type="RichTextLabel" parent="MainMenu" unique_id=1849580195]
-modulate = Color(0.9416386, 0.1983059, 0, 1)
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -296.0
-offset_top = -320.0
-offset_right = 297.0
-offset_bottom = -184.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_constants/outline_size = 10
-theme_override_font_sizes/normal_font_size = 50
-scroll_active = false
-script = ExtResource("5_oeksg")
-_max_size = 50
-_current_font_size = 50
-_editor_defaults_set = true
-metadata/_custom_type_script = "uid://co0lo02vnu10n"
+[node name="MainMenu" parent="." unique_id=531419971 instance=ExtResource("4_qacqj")]
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=276714175]
 
 [node name="StatusSync" type="MultiplayerSynchronizer" parent="." unique_id=2050001423]
 replication_config = SubResource("SceneReplicationConfig_ytjk5")
 
-[connection signal="pressed" from="MainMenu/ClientButton" to="MainMenu" method="_on_client_button_pressed"]
-[connection signal="text_submitted" from="MainMenu/User" to="MainMenu" method="_on_user_text_submitted"]
-[connection signal="text_submitted" from="MainMenu/Password" to="MainMenu" method="_on_password_text_submitted"]
+[node name="Loading" type="TextureRect" parent="." unique_id=1839941208]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -358.99994
+offset_top = -352.0
+offset_right = 753.2097
+offset_bottom = 758.6736
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.62668025, 0.5654227)
+texture = ExtResource("5_oeksg")
+
+[editable path="MainMenu"]

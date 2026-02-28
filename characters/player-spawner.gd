@@ -52,6 +52,8 @@ func _handle_client_start(_id: int) -> void:
 	var ok: bool = await auth_done
 	if not ok:
 		return
+	MainMenu.queue_free()
+	$"../Loading".show()
 	NetworkManager.notify_ready_in_world()
 
 func _on_login_success(_account_data: Dictionary) -> void:
@@ -59,7 +61,7 @@ func _on_login_success(_account_data: Dictionary) -> void:
 
 func _on_login_fail(reason: String) -> void:
 	print("Login failed: ", reason)
-	$"../MainMenu/Log".text = reason
+	$"../MainMenu/ClientButton/Log".text = reason
 	NetworkTime.stop()
 	if multiplayer.multiplayer_peer:
 		multiplayer.multiplayer_peer.close()
@@ -71,6 +73,11 @@ func _handle_stop() -> void:
 	_login_flow_started = false
 	avatars.clear()
 
+	if not is_instance_valid(MainMenu):
+		var menu_scene = load("res://Maps/main_menu.tscn") 
+		MainMenu = menu_scene.instantiate()
+		$"..".add_child(MainMenu)
+		
 func _handle_peer_leave(id: int) -> void:
 	if multiplayer.is_server():
 		despawn_player(id)
@@ -78,12 +85,17 @@ func _handle_peer_leave(id: int) -> void:
 func _on_player_authenticated(id: int) -> void:
 	if not multiplayer.is_server():
 		return
+	
+	#Set timeout: (timeout_limit, timeout_min, timeout_max) in milliseconds. 0, 0 means use defaults. 30000 = 30 secs
+	multiplayer.multiplayer_peer.get_peer(id).set_timeout(0, 0, 60000)
+	
 	var username = NetworkManager.get_account_data(id)["username"]
 	var sql = SQLite.new()
 	sql.path = database
 	sql.verbosity_level = SQLite.QUIET
 	sql.open_db()
-	var rows = sql.select_rows("charStats", "Username = '%s'" % username, ["CurrentLevel"])
+	sql.query_with_bindings("SELECT CurrentLevel FROM charStats WHERE Username = ?", [username])
+	var rows = sql.query_result
 	var level = str(rows[0]["CurrentLevel"])
 	sql.close_db()
 	loadedLevels[level].MpSync.set_visibility_for(id, true)
@@ -208,7 +220,3 @@ func _on_child_added(node: Node) -> void:
 			state_sync.visibility_filter.default_visibility = false
 			if multiplayer.is_server() and node.CurrentLevel != "":
 				add_to_level(node.CurrentLevel, peer_id, node)
-
-	if peer_id == multiplayer.get_unique_id():
-		if is_instance_valid(MainMenu):
-			MainMenu.queue_free()

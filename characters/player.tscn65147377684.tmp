@@ -17,9 +17,6 @@ properties/0/replication_mode = 2
 properties/1/path = NodePath("Mesh:rotation:y")
 properties/1/spawn = true
 properties/1/replication_mode = 0
-properties/2/path = NodePath("Afk:text")
-properties/2/spawn = true
-properties/2/replication_mode = 2
 
 [sub_resource type="GDScript" id="GDScript_evndh"]
 resource_name = "camera_pivot"
@@ -102,6 +99,8 @@ func _process(delta: float) -> void:
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_mk8qw")
+speed = null
+jump_strength = null
 
 [node name="Input" type="Node" parent="." unique_id=1920213990]
 script = ExtResource("10_50d5g")
@@ -150,8 +149,3 @@ root = NodePath("..")
 properties = Array[String]([":transform", ":velocity"])
 full_state_interval = 30
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
-
-[node name="Afk" type="Label3D" parent="." unique_id=1322068426]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7934787, 0)
-billboard = 1
-modulate = Color(1, 1, 0, 1)

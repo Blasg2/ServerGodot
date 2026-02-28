@@ -16,6 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="MyNetFox"
 config/description="Network addon with rollback"
+config/version="1.0.0"
 run/main_scene="uid://bfshwoko470di"
 config/features=PackedStringArray("4.6")
 run/max_fps=60
@@ -23,6 +24,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+PatchLoader="*uid://d2i17lqsek4n5"
 Async="*res://shared/scripts/async.gd"
 WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
 NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
@@ -35,7 +37,6 @@ NetworkCommandServer="*res://addons/netfox/servers/network-command-server.gd"
 NetworkManager="*uid://4nfm7km0c3lb"
 Ollama="*uid://dqmjqyg5t1lsb"
 control="*uid://dvqs7px0tmp1o"
-PhantomCameraManager="*uid://duq6jhf6unyis"
 
 [display]
 
@@ -48,7 +49,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
+enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
 
 [file_customization]
 

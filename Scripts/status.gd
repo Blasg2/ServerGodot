@@ -12,7 +12,6 @@ var temp_c := 0.0:
 var t: Timer
 
 
-
 func _notification(what):
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MINIMIZED:
