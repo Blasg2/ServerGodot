@@ -12,8 +12,12 @@ var jump: bool = false
 var camera_yaw: float = 0.0
 var joy_movement: Vector2 = Vector2.ZERO
 
+
 func _enter_tree() -> void:
-	control.joystick.connect(setJoy)
+	if is_multiplayer_authority():
+		NetworkTime.before_tick_loop.connect(_before_tick_loop)
+		control.joystick.connect(setJoy)
+
 
 func _input(event: InputEvent) -> void:
 	if multiplayer.multiplayer_peer == null:
@@ -49,8 +53,11 @@ func _process(_delta: float) -> void:
 	if pivot:
 		camera_yaw = pivot.global_rotation.y
 	
-	# Send to server
+
+	
+func _before_tick_loop():
 	_send_input.rpc_id(1, movement, jump, camera_yaw)
+
 
 @rpc("authority", "unreliable_ordered", "call_remote")
 func _send_input(mv: Vector3, jmp: bool, yaw: float) -> void:

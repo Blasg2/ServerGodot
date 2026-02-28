@@ -1,3 +1,7 @@
+OptionButton
+Control
+Button
+HSlider
 Label
 ProgressBar
 TextureRect
@@ -7,8 +11,5 @@ ShapeCast3D
 SubViewport
 Sprite3D
 TouchScreenButton
-Button
 Node
 Node3D
-SpringArm3D
-OmniLight3D

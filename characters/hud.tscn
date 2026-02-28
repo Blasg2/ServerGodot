@@ -27,6 +27,23 @@ func _process(_delta):
 	text = \"Ping: %d ms | Loss: %.1f%%\" % [rtt, loss_pct] + \" | FPS: %d | Tick: %d\" % [Engine.get_frames_per_second(), NetworkTime.tick]
 "
 
+[sub_resource type="GDScript" id="GDScript_3yxbx"]
+script/source = "extends Control
+
+func _ready():
+	$UI/Render.value = options.render_scale
+	
+	
+	
+func _on_phone_button_pressed():
+	$UI.visible = not $UI.visible
+
+
+func _on_render_drag_ended(value_changed):
+	options.render_scale = value_changed
+	options._apply()
+"
+
 [node name="HUD" type="CanvasLayer" unique_id=1196462823]
 script = ExtResource("1_5jt0o")
 
@@ -108,4 +125,47 @@ theme_override_font_sizes/font_size = 35
 text = "54fdf"
 script = SubResource("GDScript_egd0o")
 
+[node name="PauseMenu" type="Control" parent="." unique_id=74126763]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = SubResource("GDScript_3yxbx")
+
+[node name="PhoneButton" type="Button" parent="PauseMenu" unique_id=243701126]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="UI" type="Control" parent="PauseMenu" unique_id=468769504]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Render" type="HSlider" parent="PauseMenu/UI" unique_id=264281754]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 16.0
+max_value = 1.0
+step = 0.5
+tick_count = 3
+ticks_on_borders = true
+
+[node name="OptionButton" type="OptionButton" parent="PauseMenu/UI" unique_id=268729096]
+layout_mode = 0
+offset_left = 626.0
+offset_top = 184.0
+offset_right = 983.0
+offset_bottom = 346.0
+selected = 2
+item_count = 3
+popup/item_0/text = "Baixa"
+popup/item_0/id = 0
+popup/item_1/text = "Média"
+popup/item_1/id = 1
+popup/item_2/text = "Alta"
+popup/item_2/id = 2
+
 [connection signal="text_submitted" from="NpcChat" to="NpcChat" method="_on_text_submitted"]
+[connection signal="pressed" from="PauseMenu/PhoneButton" to="PauseMenu" method="_on_phone_button_pressed"]
+[connection signal="drag_ended" from="PauseMenu/UI/Render" to="PauseMenu" method="_on_render_drag_ended"]

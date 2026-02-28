@@ -37,6 +37,7 @@ NetworkCommandServer="*res://addons/netfox/servers/network-command-server.gd"
 NetworkManager="*uid://4nfm7km0c3lb"
 Ollama="*uid://dqmjqyg5t1lsb"
 control="*uid://dvqs7px0tmp1o"
+options="*uid://cc0p1cwi714l0"
 
 [display]
 
