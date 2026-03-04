@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b5e2hdgdw6ulj" path="res://addons/virtual_joystick_plus/resources/textures/joystick_texture_5.png" id="5_3yxbx"]
 [ext_resource type="Texture2D" uid="uid://c314a3yampbhk" path="res://addons/virtual_joystick_plus/resources/textures/stick_texture_5.png" id="6_mrv8i"]
 [ext_resource type="Texture2D" uid="uid://cdb8di7e1p6h6" path="res://icon.png" id="7_3yxbx"]
+[ext_resource type="Texture2D" uid="uid://kk8rw73m7yiq" path="res://addons/indent_guidelines/icon.png" id="8_mrv8i"]
 
 [sub_resource type="GDScript" id="GDScript_egd0o"]
 resource_name = "ping"
@@ -28,19 +29,37 @@ func _process(_delta):
 "
 
 [sub_resource type="GDScript" id="GDScript_3yxbx"]
-script/source = "extends Control
+script/source = "extends Node
 
 func _ready():
-	$UI/Render.value = options.render_scale
-	
-	
-	
+	##Gráfico button set
+	if options.render_scale == 0.4: $UI/OptionButton.selected = 0
+	elif options.render_scale == 0.7: $UI/OptionButton.selected = 1
+
+	##FPS BUTTON SET
+	if options.max_fps == 30: 
+		$\"UI/30fps\".button_pressed = true
+
+
 func _on_phone_button_pressed():
 	$UI.visible = not $UI.visible
 
+##Gráfico
+func _on_option_button_item_selected(index: int) -> void:
+	if index == 0:
+		options.render_scale = 0.4
+	elif index == 1:
+		options.render_scale = 0.7
+	elif index == 2:
+		options.render_scale = 1.0
+	options._apply()	
 
-func _on_render_drag_ended(value_changed):
-	options.render_scale = value_changed
+##FPS
+func _on_fps_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		options.max_fps = 30
+	else:
+		options.max_fps = 60
 	options._apply()
 "
 
@@ -62,10 +81,10 @@ grow_vertical = 0
 script = ExtResource("2_escne")
 
 [node name="Temperatura" type="RichTextLabel" parent="." unique_id=1036051414]
-offset_left = 66.0
-offset_top = 51.0
-offset_right = 345.0
-offset_bottom = 215.0
+offset_left = 84.0
+offset_top = 57.0
+offset_right = 363.0
+offset_bottom = 221.0
 theme_override_constants/outline_size = 7
 theme_override_font_sizes/normal_font_size = 37
 text = "99 C-"
@@ -125,38 +144,34 @@ theme_override_font_sizes/font_size = 35
 text = "54fdf"
 script = SubResource("GDScript_egd0o")
 
-[node name="PauseMenu" type="Control" parent="." unique_id=74126763]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="PauseMenu" type="Node" parent="." unique_id=54331137]
 script = SubResource("GDScript_3yxbx")
 
-[node name="PhoneButton" type="Button" parent="PauseMenu" unique_id=243701126]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="PhoneButton" type="TextureButton" parent="PauseMenu" unique_id=1297359072]
+offset_left = 6.0
+offset_top = 1.0
+offset_right = 70.0
+offset_bottom = 65.0
+texture_normal = ExtResource("8_mrv8i")
 
-[node name="UI" type="Control" parent="PauseMenu" unique_id=468769504]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Render" type="HSlider" parent="PauseMenu/UI" unique_id=264281754]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 16.0
-max_value = 1.0
-step = 0.5
-tick_count = 3
-ticks_on_borders = true
+[node name="UI" type="Node2D" parent="PauseMenu" unique_id=871954356]
+visible = false
+position = Vector2(892, 468)
 
 [node name="OptionButton" type="OptionButton" parent="PauseMenu/UI" unique_id=268729096]
-layout_mode = 0
-offset_left = 626.0
-offset_top = 184.0
-offset_right = 983.0
-offset_bottom = 346.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -242.0
+offset_right = 258.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+alignment = 1
 selected = 2
 item_count = 3
 popup/item_0/text = "Baixa"
@@ -166,6 +181,24 @@ popup/item_1/id = 1
 popup/item_2/text = "Alta"
 popup/item_2/id = 2
 
+[node name="30fps" type="CheckButton" parent="PauseMenu/UI" unique_id=1956762298]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -151.0
+offset_top = -9.0
+offset_right = -52.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(4.065384, 3.1709728)
+text = "30 fps:"
+alignment = 1
+expand_icon = true
+
 [connection signal="text_submitted" from="NpcChat" to="NpcChat" method="_on_text_submitted"]
 [connection signal="pressed" from="PauseMenu/PhoneButton" to="PauseMenu" method="_on_phone_button_pressed"]
-[connection signal="drag_ended" from="PauseMenu/UI/Render" to="PauseMenu" method="_on_render_drag_ended"]
+[connection signal="item_selected" from="PauseMenu/UI/OptionButton" to="PauseMenu" method="_on_option_button_item_selected"]
+[connection signal="toggled" from="PauseMenu/UI/30fps" to="PauseMenu" method="_on_fps_toggled"]

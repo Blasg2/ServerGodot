@@ -1,10 +1,13 @@
-res://Maps/world.tscn
+res://Maps/level1.tscn
 res://addons/_Godot-IDE_/IDE.gd
 res://Art/PsxChar/iusaf.tres
 res://Art/PsxChar/gariba.tres
 res://Art/PsxChar/joj.tres
 res://Art/PsxChar/lil.tres
-res://characters/player-input.gd
+res://Art/psxChar.tscn
+res://Maps/chelala.gd
+res://Maps/level1Script.gd
+res://Maps/wpp_comment.gd
+res://Scripts/Ollama.gd
+res://Scripts/npc.gd
 res://characters/hud.tscn
-res://characters/pause_menu.gd
-res://Scripts/options.gd

@@ -2,6 +2,7 @@ extends LineEdit
 
 @export var npc_name := "Bob"
 @export var personality := "You are a friendly NPC in a game. Reply in pt-BR. Keep it short (1-2 sentences)."
+@export var model := Ollama.modelSmart
 
 # This version makes CLIENT ask SERVER, and SERVER calls Ollama, then replies back to that CLIENT.
 
@@ -22,6 +23,7 @@ func _call_ollama_local(player_text: String) -> void:
 	var prompt := "%s\nNPC name: %s\nPlayer says: %s\nNPC reply:" % [personality, npc_name, player_text]
 	_show_dialogue("%s: ..." % npc_name)
 	Ollama.chat(
+		model,
 		prompt,
 		func(answer: String):
 			_show_dialogue("%s: %s" % [npc_name, answer.strip_edges()]),
@@ -40,6 +42,7 @@ func _server_npc_talk(_npc_name: String, _personality: String, player_text: Stri
 	var prompt := "%s\nNPC name: %s\nPlayer says: %s\nNPC reply:" % [_personality, _npc_name, player_text]
 
 	Ollama.chat(
+		model,
 		prompt,
 		func(answer: String):
 			rpc_id(sender_id, "_client_npc_reply", _npc_name, answer),

@@ -3,11 +3,12 @@ extends Node
 class_name OllamaClient
 
 @export var base_url := "http://127.0.0.1:11434"
-@export var model := "llama3.1:8b"
+@export var modelSmart := "llama3.1:8b"  
+@export var modelDumb := "mannix/llama3.1-8b-abliterated"  
 
 # SERVER-ONLY async call
 # Calls on_done(text) when ready, on_error(msg) on failure
-func chat(prompt: String, on_done: Callable, on_error: Callable = Callable()) -> void:
+func chat(model: String, prompt: String, on_done: Callable, on_error: Callable = Callable()) -> void:
 	# Make sure only the server uses Ollama (prevents client abuse + keeps API local)
 	if multiplayer and multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		if on_error.is_valid():

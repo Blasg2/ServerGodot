@@ -1,8 +1,9 @@
 extends MeshInstance3D
 
-@export var npc_name := "Chelala"
-@export var personality := "Comment about the news, and make socialist/comunnism remarks about them. Reply in pt-BR. (4-9 sentences)."
-@export var model := Ollama.modelDumb
+@export var npc_name := "Menina"
+@export var personality := "Comment with dark humor on the chat messages and the people that sent the messages. Reply in pt-BR. (4-9 sentences)."
+@export var model := Ollama.modelSmart
+
 # This version makes CLIENT ask SERVER, and SERVER calls Ollama, then replies back to that CLIENT.
 
 func talk(player_text: String) -> void:
@@ -55,4 +56,4 @@ func _client_npc_reply(_npc_name: String, answer: String) -> void:
 	_show_dialogue("%s: %s" % [_npc_name, answer.strip_edges()])
 
 func _show_dialogue(texte: String) -> void:
-	$"../NewsComment/SubViewport/NewsComment".text = texte
+	$"../ChatComment/SubViewCOMMENT/ChatComment".text = texte

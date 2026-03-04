@@ -4,15 +4,16 @@ var Wchat: String
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		Wchat = FileAccess.get_file_as_string("res://data/ZapChat.txt")
-		$"../SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
-		$"../Esfera".talk($"../SubViewport/Chat".text)
+		Wchat = FileAccess.get_file_as_string("res://data/ZapChat.txt") + FileAccess.get_file_as_string("res://data/ZapGui.txt")
+		
+		$"../ChatSprite/SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
+		$"../Esfera".talk($"../ChatSprite/SubViewport/Chat".text)
 
 @rpc ("any_peer", "reliable")
 func refreshChat()->void:
 	if multiplayer.is_server():
-		$"../SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
-		$"../Esfera".talk($"../SubViewport/Chat".text)
+		$"../ChatSprite/SubViewport/Chat".text = pegar_parte_do_chat(Wchat)
+		$"../Esfera".talk($"../ChatSprite/SubViewport/Chat".text)
 
 func pegar_parte_do_chat(chat: String) -> String:
 	var lines := chat.split("\n", false)
@@ -24,7 +25,7 @@ func pegar_parte_do_chat(chat: String) -> String:
 		var s := lines[i].strip_edges()
 
 		# Skip media placeholder
-		if s.find("Multimedia omitido") != -1:
+		if s.find("Multimedia omitido") != -1 or s.find("Mídia oculta") != -1:
 			continue
 
 		# Remove "date, time - " prefix if present

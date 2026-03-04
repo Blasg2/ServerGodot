@@ -10,7 +10,6 @@ var _http: HTTPRequest
 var _download_dest: String = ""
 var _download_callback: Callable
 var _remote_info: Dictionary = {}
-var _pending_base_downloads: Array = []
 var _downloaded_something := false
 
 func _ready():
@@ -33,113 +32,25 @@ func _on_version_check(result: int, code: int, _h: PackedStringArray, body: Pack
 	
 	var remote_base: String = _remote_info.get("base", PatchLoader.BUILT_IN_BASE)
 	var remote_version: String = _remote_info.get("version", PatchLoader.BUILT_IN_BASE)
-	var store_version: String = _remote_info.get("store_version", PatchLoader.BUILT_IN_BASE)
 	
+	# Already up to date
 	if remote_version == PatchLoader.current_version:
 		_go_to_main_menu()
 		return
 	
-	if PatchLoader.current_base != remote_base:
+	# New base version required
+	if remote_base != PatchLoader.BUILT_IN_BASE:
 		if OS.has_feature("mobile"):
-			if _version_compare(store_version, PatchLoader.BUILT_IN_BASE) > 0:
-				_prompt_store_update(store_version)
-			else:
-				_go_to_main_menu()
-			return
-		
-		var upgrades: Array = _remote_info.get("base_upgrades", [])
-		_pending_base_downloads = _find_upgrade_path(PatchLoader.current_base, remote_base, upgrades)
-		
-		if _pending_base_downloads.is_empty():
-			var full_url = _remote_info.get("full_download_url", "")
-			if full_url != "":
-				_prompt_full_download(full_url)
-			else:
-				_go_to_main_menu()
-			return
-		
-		_download_next_base_upgrade()
-		return
-	
-	_download_patch(remote_version)
-
-# ─── BASE UPGRADES ───
-
-func _find_upgrade_path(from_base: String, to_base: String, upgrades: Array) -> Array:
-	var upgrade_map := {}
-	for u in upgrades:
-		upgrade_map[u["from"]] = u
-	
-	var path := []
-	var current = from_base
-	var safety := 0
-	while current != to_base and safety < 50:
-		safety += 1
-		if not upgrade_map.has(current):
-			return []
-		var step = upgrade_map[current]
-		if not PatchLoader.applied_bases.has(step["to"]):
-			path.append(step)
-		current = step["to"]
-	
-	if current != to_base:
-		return []
-	return path
-
-func _download_next_base_upgrade():
-	if _pending_base_downloads.is_empty():
-		PatchLoader.current_version = PatchLoader.current_base + ".0"
-		PatchLoader.save_state()
-		
-		var remote_version: String = _remote_info.get("version", "")
-		if remote_version != PatchLoader.current_version:
-			_download_patch(remote_version)
+			PatchLoader._clear_all()
+			PatchLoader.save_state()
+			_prompt_store_update()
 		else:
-			_go_to_main_menu()
+			status_label.text = "Contate o dev"
+			get_tree().paused = true
 		return
 	
-	var step = _pending_base_downloads[0]
-	var dest_name = PatchLoader.base_pck_name(step["to"])
-	
-	status_label.text = "Baixando base %s → %s..." % [step["from"], step["to"]]
-	progress_bar.visible = true
-	progress_bar.value = 0
-	
-	DirAccess.make_dir_recursive_absolute("user://patches/")
-	_download_file(
-		step["url"],
-		"user://patches/" + dest_name,
-		_on_base_downloaded.bind(step)
-	)
-
-func _on_base_downloaded(result: int, code: int, _h: PackedStringArray, _b: PackedByteArray, step: Dictionary):
-	progress_bar.visible = false
-	var dest_path = "user://patches/" + PatchLoader.base_pck_name(step["to"])
-	
-	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
-		if FileAccess.file_exists(dest_path):
-			DirAccess.remove_absolute(dest_path)
-		status_label.text = "Falha ao baixar atualização"
-		await get_tree().create_timer(2.0).timeout
-		_go_to_main_menu()
-		return
-	
-	if ProjectSettings.load_resource_pack(dest_path):
-		PatchLoader.applied_bases.append(step["to"])
-		PatchLoader.current_base = step["to"]
-		PatchLoader.save_state()
-		_downloaded_something = true
-		
-		if FileAccess.file_exists("user://patches/patch.pck"):
-			DirAccess.remove_absolute("user://patches/patch.pck")
-		
-		_pending_base_downloads.pop_front()
-		_download_next_base_upgrade()
-	else:
-		DirAccess.remove_absolute(dest_path)
-		status_label.text = "Falha ao aplicar atualização"
-		await get_tree().create_timer(2.0).timeout
-		_go_to_main_menu()
+	# Same base, new patch
+	_download_patch(remote_version)
 
 # ─── PATCH ───
 
@@ -149,6 +60,7 @@ func _download_patch(version: String):
 		_go_to_main_menu()
 		return
 	
+	# Delete old patch
 	if FileAccess.file_exists("user://patches/patch.pck"):
 		DirAccess.remove_absolute("user://patches/patch.pck")
 	
@@ -189,21 +101,11 @@ func _on_patch_downloaded(result: int, code: int, _h: PackedStringArray, _b: Pac
 
 # ─── PROMPTS ───
 
-func _prompt_store_update(store_version: String):
-	status_label.text = "Nova versão disponível (v%s)!\nAtualize pela Play Store." % store_version
+func _prompt_store_update():
+	status_label.text = "Nova versão disponível!\nAtualize pela Play Store."
 	progress_bar.visible = false
 	await get_tree().create_timer(2.0).timeout
 	OS.shell_open(PLAY_STORE_URL)
-	await get_tree().create_timer(3.0).timeout
-	_go_to_main_menu()
-
-func _prompt_full_download(url: String):
-	status_label.text = "Nova versão disponível!\nBaixe a nova versão."
-	progress_bar.visible = false
-	await get_tree().create_timer(2.0).timeout
-	OS.shell_open(url)
-	await get_tree().create_timer(3.0).timeout
-	_go_to_main_menu()
 
 # ─── HTTP ───
 
