@@ -13,12 +13,14 @@ func _apply_mesh()->void:
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		if player.username == "eve":
+		if player.username == "Gariba":
 			meshPath = "res://Art/PsxChar/gariba.tres"
-		if player.username == "alice":
+		if player.username == "Iusaf":
 			meshPath = "res://Art/PsxChar/iusaf.tres"
-		if player.username == "bob":
+		if player.username == "Joj":
 			meshPath = "res://Art/PsxChar/joj.tres"
-		if player.username == "dave":
+		if player.username == "Lil":
 			meshPath = "res://Art/PsxChar/lil.tres"
+		if player.username == "Gui":
+			meshPath = "res://Art/PsxChar/gotica.tres"
 			

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Achievement" format=3 uid="uid://bpp0mj0ls8uqj"]
+
+[ext_resource type="Texture2D" uid="uid://cg3b84ak8bsrv" path="res://addons/milestone/icons/hidden_achievement.svg" id="1_7ifyh"]
+[ext_resource type="Texture2D" uid="uid://dmbey47vfsa2g" path="res://addons/milestone/icons/missing_icon.svg" id="2_r8hgm"]
+[ext_resource type="Script" uid="uid://dtyojmellf4e5" path="res://addons/milestone/scripts/achievements/achievement.gd" id="3_w607b"]
+
+[resource]
+script = ExtResource("3_w607b")
+id = "new_achievement"
+name = "NEW_ACHIEVEMENT_NAME"
+description = "NEW_ACHIEVEMENT_DESC"

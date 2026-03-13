@@ -11,6 +11,21 @@ properties/0/path = NodePath(".:temp_c")
 properties/0/spawn = true
 properties/0/replication_mode = 2
 
+[sub_resource type="GDScript" id="GDScript_oeksg"]
+resource_name = "ChatSpawn"
+script/source = "extends Node
+
+var fala := preload(\"res://Scripts/falar.tscn\")
+
+@rpc(\"any_peer\", \"reliable\", \"call_local\")
+func spawn_message(texto: String, markerP: String) -> void:
+	var falar := fala.instantiate()
+	var label = falar.get_node(\"Label3D\")
+	label.text = texto
+	label.markerPath = NodePath(markerP)
+	add_child(falar)
+"
+
 [node name="World" type="Node" unique_id=436590645]
 script = ExtResource("1_qacqj")
 
@@ -30,6 +45,95 @@ MainMenu = NodePath("../MainMenu")
 
 [node name="MainMenu" parent="." unique_id=531419971 instance=ExtResource("4_qacqj")]
 
+[node name="SelectChar" parent="MainMenu" index="0" unique_id=1928371568]
+offset_left = -847.21277
+offset_top = -784.0
+offset_right = 770.92896
+offset_bottom = 732.0
+
+[node name="Hal" parent="MainMenu/SelectChar" index="0" unique_id=1978198158]
+modulate = Color(1, 0.25490198, 0, 0)
+offset_left = 106.21277
+offset_top = 418.0
+offset_right = 380.21277
+offset_bottom = 735.0
+
+[node name="Gariba" parent="MainMenu/SelectChar" index="1" unique_id=406368295]
+modulate = Color(1, 0.25490198, 0, 0)
+offset_left = 404.21277
+offset_top = 421.0
+offset_right = 671.21277
+offset_bottom = 734.0
+
+[node name="Iusaf" parent="MainMenu/SelectChar" index="2" unique_id=84121276]
+modulate = Color(1, 0.25490198, 0, 0)
+offset_left = 940.21277
+offset_top = 422.0
+offset_right = 1217.2128
+offset_bottom = 737.0
+
+[node name="Lil" parent="MainMenu/SelectChar" index="3" unique_id=1144735947]
+modulate = Color(1, 0.25490198, 0, 0)
+offset_left = 1231.2128
+offset_top = 415.0
+offset_right = 1509.2128
+offset_bottom = 737.0
+
+[node name="Joj" parent="MainMenu/SelectChar" index="4" unique_id=1388831355]
+modulate = Color(1, 0.25490198, 0, 0)
+offset_left = 413.21277
+offset_top = 772.0
+offset_right = 669.21277
+offset_bottom = 1100.0
+
+[node name="ClientButton" parent="MainMenu" index="1" unique_id=242482442]
+anchors_preset = 8
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 211.0
+offset_top = 392.0
+offset_right = 749.0
+offset_bottom = 493.0
+grow_vertical = 2
+
+[node name="Log" parent="MainMenu/ClientButton" index="0" unique_id=453850986]
+offset_left = -5.0
+offset_top = -488.0
+offset_right = 279.0
+offset_bottom = -263.0
+
+[node name="User" parent="MainMenu" index="2" unique_id=498285299]
+offset_left = 2210.8235
+offset_top = -277.0
+offset_right = 2279.3235
+offset_bottom = -246.0
+
+[node name="Password" parent="MainMenu" index="3" unique_id=355803936]
+offset_left = 475.0
+offset_top = 242.0
+offset_right = 769.0
+offset_bottom = 363.0
+
+[node name="ServerStatus" parent="MainMenu" index="4" unique_id=62553167]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 445.0
+offset_top = -500.0
+offset_right = 759.0
+offset_bottom = -413.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Preto" parent="MainMenu" index="5" unique_id=1858268452]
+offset_left = -152.0
+offset_top = -26.0
+offset_right = 468.0
+offset_bottom = 371.0
+script = null
+
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=276714175]
 
 [node name="StatusSync" type="MultiplayerSynchronizer" parent="." unique_id=2050001423]
@@ -42,13 +146,16 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -358.99994
-offset_top = -352.0
-offset_right = 753.2097
-offset_bottom = 758.6736
+offset_left = -425.0
+offset_top = -358.0
+offset_right = 864.33374
+offset_bottom = 1155.9116
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.62668025, 0.5654227)
 texture = ExtResource("5_oeksg")
+
+[node name="Chat" type="Node" parent="." unique_id=644698211]
+script = SubResource("GDScript_oeksg")
 
 [editable path="MainMenu"]

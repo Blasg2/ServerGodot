@@ -6,43 +6,42 @@
 [ext_resource type="Script" uid="uid://vsdimn30u6yc" path="res://addons/virtual_joystick_plus/virtual_joystick_plus.gd" id="4_egd0o"]
 [ext_resource type="Texture2D" uid="uid://b5e2hdgdw6ulj" path="res://addons/virtual_joystick_plus/resources/textures/joystick_texture_5.png" id="5_3yxbx"]
 [ext_resource type="Texture2D" uid="uid://c314a3yampbhk" path="res://addons/virtual_joystick_plus/resources/textures/stick_texture_5.png" id="6_mrv8i"]
-[ext_resource type="Texture2D" uid="uid://cdb8di7e1p6h6" path="res://icon.png" id="7_3yxbx"]
-[ext_resource type="Texture2D" uid="uid://kk8rw73m7yiq" path="res://addons/indent_guidelines/icon.png" id="8_mrv8i"]
+[ext_resource type="Texture2D" uid="uid://borlggv2uwi33" path="res://Art/pular.png" id="7_f41vb"]
+[ext_resource type="Texture2D" uid="uid://ddf44mfnuea6n" path="res://Art/PhoneMenu.png" id="9_6nikj"]
+[ext_resource type="Texture2D" uid="uid://ctaug62iof8ug" path="res://Art/Phone.png" id="9_f41vb"]
+[ext_resource type="Script" uid="uid://wn30x7o3f47m" path="res://addons/milestone/scripts/achievements/achievement_notifier.gd" id="10_6nikj"]
+[ext_resource type="Script" uid="uid://dhxfcukhb2baf" path="res://Scripts/player_stats.gd" id="11_xkedq"]
+[ext_resource type="Script" uid="uid://bttgnk3bb2a8i" path="res://addons/font_auto_size_labels/auto_size_label.gd" id="12_c60ex"]
 
-[sub_resource type="GDScript" id="GDScript_egd0o"]
-resource_name = "ping"
-script/source = "extends Label
+[sub_resource type="GDScript" id="GDScript_f41vb"]
+resource_name = "falarReal"
+script/source = "extends LineEdit
 
-func _process(_delta):
-	if multiplayer.get_unique_id() == 1:
-		return
-	var peer = multiplayer.multiplayer_peer
-	if peer == null:
-		return
-	var peer_info = peer.get_peer(1)
-	if peer_info == null:
-		return
-	var rtt = peer_info.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
-	var loss_raw = peer_info.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS)
-	var loss_pct = loss_raw / 655.36
-	text = \"Ping: %d ms | Loss: %.1f%%\" % [rtt, loss_pct] + \" | FPS: %d | Tick: %d\" % [Engine.get_frames_per_second(), NetworkTime.tick]
+func _on_text_submitted(texto: String) -> void:
+	var markerP = $\"..\".get_parent().get_node(\"Mesh/meshy/Chat\")
+	get_node(\"/root/World/Chat\").spawn_message.rpc(texto, str(markerP.get_path()))
+	text = \"\"
+	edit.call_deferred()
 "
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6nikj"]
+radius = 329.47
 
 [sub_resource type="GDScript" id="GDScript_3yxbx"]
 script/source = "extends Node
 
 func _ready():
 	##Gráfico button set
-	if options.render_scale == 0.4: $UI/OptionButton.selected = 0
-	elif options.render_scale == 0.7: $UI/OptionButton.selected = 1
+	if options.render_scale == 0.4: $Phone/OptionButton.selected = 0
+	elif options.render_scale == 0.7: $Phone/OptionButton.selected = 1
 
 	##FPS BUTTON SET
 	if options.max_fps == 30: 
-		$\"UI/30fps\".button_pressed = true
+		$\"Phone/30fps\".button_pressed = true
 
 
 func _on_phone_button_pressed():
-	$UI.visible = not $UI.visible
+	$Phone.visible = not $Phone.visible
 
 ##Gráfico
 func _on_option_button_item_selected(index: int) -> void:
@@ -63,10 +62,32 @@ func _on_fps_toggled(toggled_on: bool) -> void:
 	options._apply()
 "
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_mrv8i"]
+
+[sub_resource type="GDScript" id="GDScript_egd0o"]
+resource_name = "ping"
+script/source = "extends Label
+
+func _process(_delta):
+	if multiplayer.get_unique_id() == 1:
+		return
+	var peer = multiplayer.multiplayer_peer
+	if peer == null:
+		return
+	var peer_info = peer.get_peer(1)
+	if peer_info == null:
+		return
+	var rtt = peer_info.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
+	var loss_raw = peer_info.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS)
+	var loss_pct = loss_raw / 655.36
+	text = \"Ping: %d ms | Loss: %.1f%% | FPS: %d\" % [rtt, loss_pct, Engine.get_frames_per_second()]  #NOTE: + \" | Tick: %d\" % [NetworkTime.tick]
+"
+
 [node name="HUD" type="CanvasLayer" unique_id=1196462823]
 script = ExtResource("1_5jt0o")
 
 [node name="NpcChat" type="LineEdit" parent="." unique_id=2059504985]
+visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -80,11 +101,25 @@ grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("2_escne")
 
+[node name="Falar" type="LineEdit" parent="." unique_id=20551787]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -368.0
+offset_top = -161.0
+offset_right = 371.0
+offset_bottom = -99.0
+grow_horizontal = 2
+grow_vertical = 0
+script = SubResource("GDScript_f41vb")
+
 [node name="Temperatura" type="RichTextLabel" parent="." unique_id=1036051414]
-offset_left = 84.0
-offset_top = 57.0
-offset_right = 363.0
-offset_bottom = 221.0
+offset_left = 153.0
+offset_top = 7.0
+offset_right = 432.0
+offset_bottom = 171.0
 theme_override_constants/outline_size = 7
 theme_override_font_sizes/normal_font_size = 37
 text = "99 C-"
@@ -128,77 +163,197 @@ joystick_texture = ExtResource("5_3yxbx")
 stick_texture = ExtResource("6_mrv8i")
 
 [node name="TouchScreenButton" type="TouchScreenButton" parent="RightJoy" unique_id=363855251]
-position = Vector2(85, -144)
-texture_normal = ExtResource("7_3yxbx")
+position = Vector2(85.99997, -180)
+scale = Vector2(0.2599688, 0.31486908)
+texture_normal = ExtResource("7_f41vb")
+shape = SubResource("CircleShape2D_6nikj")
 action = "move_jump"
+
+[node name="PauseMenu" type="Node" parent="." unique_id=54331137]
+script = SubResource("GDScript_3yxbx")
+
+[node name="Phone" type="TextureRect" parent="PauseMenu" unique_id=1065499731]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -656.0
+offset_top = -641.0
+offset_right = 648.0
+offset_bottom = 1001.4304
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_f41vb")
+
+[node name="Label" type="Label" parent="PauseMenu/Phone" unique_id=2108476597]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -108.5
+offset_top = -558.2152
+offset_right = 41.5
+offset_bottom = -484.2152
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "Gráfico:"
+
+[node name="OptionButton" type="OptionButton" parent="PauseMenu/Phone" unique_id=268729096]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -243.0
+offset_top = -465.2152
+offset_right = -121.0
+offset_bottom = -415.2152
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3.59, 3.59)
+theme_override_font_sizes/font_size = 30
+flat = true
+alignment = 1
+expand_icon = true
+selected = 2
+item_count = 3
+popup/item_0/text = "Baixo"
+popup/item_0/id = 0
+popup/item_1/text = "Médio"
+popup/item_1/id = 1
+popup/item_2/text = "Alto"
+popup/item_2/id = 2
+
+[node name="30fps" type="CheckButton" parent="PauseMenu/Phone" unique_id=1956762298]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -251.21521
+offset_right = -81.0
+offset_bottom = -215.21521
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3.108185, 3.7791958)
+theme_override_font_sizes/font_size = 20
+text = "30 fps:"
+icon = SubResource("ViewportTexture_mrv8i")
+alignment = 1
+
+[node name="PhoneMenu" type="TextureRect" parent="PauseMenu" unique_id=914900254]
+offset_left = 6.0
+offset_top = 7.0
+offset_right = 1013.6015
+offset_bottom = 1399.62
+scale = Vector2(0.12207207, 0.12207207)
+texture = ExtResource("9_6nikj")
 
 [node name="ping" type="Label" parent="." unique_id=628772519]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -71.5
-offset_right = 229.0
-offset_bottom = 219.0
+offset_left = -136.0
+offset_top = 2.0
+offset_right = 139.0
+offset_bottom = 134.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 35
 text = "54fdf"
+horizontal_alignment = 1
 script = SubResource("GDScript_egd0o")
 
-[node name="PauseMenu" type="Node" parent="." unique_id=54331137]
-script = SubResource("GDScript_3yxbx")
+[node name="Buttons" type="Node" parent="." unique_id=391406393]
 
-[node name="PhoneButton" type="TextureButton" parent="PauseMenu" unique_id=1297359072]
-offset_left = 6.0
-offset_top = 1.0
-offset_right = 70.0
-offset_bottom = 65.0
-texture_normal = ExtResource("8_mrv8i")
+[node name="Action" type="Button" parent="Buttons" unique_id=709427570]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -241.0
+offset_top = -700.0
+offset_right = -36.0
+offset_bottom = -539.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_vertical = 4
+text = "ACTION"
 
-[node name="UI" type="Node2D" parent="PauseMenu" unique_id=871954356]
+[node name="PhoneButton" type="Button" parent="Buttons" unique_id=2042146726]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 129.0
+offset_bottom = 181.0
+flat = true
+
+[node name="AchievementNotifier" type="Node" parent="." unique_id=1922201260 node_paths=PackedStringArray("user_interface")]
+script = ExtResource("10_6nikj")
+screen_corner = "TopRight"
+user_interface = NodePath("..")
+metadata/_custom_type_script = "uid://wn30x7o3f47m"
+
+[node name="Stats" type="Panel" parent="." unique_id=1590225532]
 visible = false
-position = Vector2(892, 468)
-
-[node name="OptionButton" type="OptionButton" parent="PauseMenu/UI" unique_id=268729096]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -242.0
-offset_right = 258.0
-offset_bottom = -64.0
+offset_left = -530.0
+offset_top = -416.5
+offset_right = 561.0
+offset_bottom = 312.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("11_xkedq")
+
+[node name="Nome" type="Label" parent="Stats" unique_id=135830938]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 30.5
+offset_right = 468.0
+offset_bottom = 139.5
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 50
+text = "Gariba"
+autowrap_mode = 3
+clip_text = true
+script = ExtResource("12_c60ex")
+_max_size = 50
+_current_font_size = 50
+_editor_defaults_set = true
+metadata/_custom_type_script = "uid://bttgnk3bb2a8i"
+
+[node name="Dinheiro" type="Label" parent="Stats" unique_id=1117487287]
+modulate = Color(2.9841065e-06, 0.82678735, 0.39797723, 1)
+layout_mode = 0
+offset_left = 28.0
+offset_top = 167.5
+offset_right = 333.0
+offset_bottom = 300.5
+theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 30
-alignment = 1
-selected = 2
-item_count = 3
-popup/item_0/text = "Baixa"
-popup/item_0/id = 0
-popup/item_1/text = "Média"
-popup/item_1/id = 1
-popup/item_2/text = "Alta"
-popup/item_2/id = 2
-
-[node name="30fps" type="CheckButton" parent="PauseMenu/UI" unique_id=1956762298]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -151.0
-offset_top = -9.0
-offset_right = -52.0
-offset_bottom = 22.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(4.065384, 3.1709728)
-text = "30 fps:"
-alignment = 1
-expand_icon = true
+text = "R$: 100"
+autowrap_mode = 3
+clip_text = true
+script = ExtResource("12_c60ex")
+_max_size = 30
+_current_font_size = 30
+_editor_defaults_set = true
+metadata/_custom_type_script = "uid://bttgnk3bb2a8i"
 
 [connection signal="text_submitted" from="NpcChat" to="NpcChat" method="_on_text_submitted"]
-[connection signal="pressed" from="PauseMenu/PhoneButton" to="PauseMenu" method="_on_phone_button_pressed"]
-[connection signal="item_selected" from="PauseMenu/UI/OptionButton" to="PauseMenu" method="_on_option_button_item_selected"]
-[connection signal="toggled" from="PauseMenu/UI/30fps" to="PauseMenu" method="_on_fps_toggled"]
+[connection signal="text_submitted" from="Falar" to="Falar" method="_on_text_submitted"]
+[connection signal="item_selected" from="PauseMenu/Phone/OptionButton" to="PauseMenu" method="_on_option_button_item_selected"]
+[connection signal="toggled" from="PauseMenu/Phone/30fps" to="PauseMenu" method="_on_fps_toggled"]
+[connection signal="pressed" from="Buttons/Action" to="." method="_on_action_pressed"]
+[connection signal="pressed" from="Buttons/PhoneButton" to="PauseMenu" method="_on_phone_button_pressed"]

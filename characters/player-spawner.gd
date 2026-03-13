@@ -6,9 +6,6 @@ extends Node
 @onready var level_spawner := $"../MapSpawn"
 @onready var maps := $"../Maps"
 
-
-var database = "res://data/game_data.db"
-var avatars: Dictionary = {}
 var _login_flow_started := false
 
 var allLevels = ["res://Maps/level1.tscn", "res://Maps/casa.tscn"]
@@ -71,7 +68,7 @@ func _on_login_fail(reason: String) -> void:
 
 func _handle_stop() -> void:
 	_login_flow_started = false
-	avatars.clear()
+	t.player.clear()
 
 	if not is_instance_valid(MainMenu):
 		var menu_scene = load("res://Maps/main_menu.tscn") 
@@ -90,14 +87,9 @@ func _on_player_authenticated(id: int) -> void:
 	multiplayer.multiplayer_peer.get_peer(id).set_timeout(0, 0, 60000)
 	
 	var username = NetworkManager.get_account_data(id)["username"]
-	var sql = SQLite.new()
-	sql.path = database
-	sql.verbosity_level = SQLite.QUIET
-	sql.open_db()
-	sql.query_with_bindings("SELECT CurrentLevel FROM charStats WHERE Username = ?", [username])
-	var rows = sql.query_result
+	t.sql.query_with_bindings("SELECT CurrentLevel FROM charStats WHERE Username = ?", [username])
+	var rows = t.sql.query_result
 	var level = str(rows[0]["CurrentLevel"])
-	sql.close_db()
 	loadedLevels[level].MpSync.set_visibility_for(id, true)
 	
 @rpc("any_peer", "reliable")
@@ -107,9 +99,9 @@ func client_level_ready(levelName: String) -> void:
 	
 	var id := multiplayer.get_remote_sender_id()
 	
-	if avatars.has(id):
-		add_to_level(levelName, id, avatars[id])
-		avatars[id].process_mode = Node.PROCESS_MODE_INHERIT
+	if t.player.has(id):
+		add_to_level(levelName, id, t.player[id])
+		t.player[id].process_mode = Node.PROCESS_MODE_INHERIT
 	else:
 	# Initial spawn
 		spawn_player(id, levelName)
@@ -117,7 +109,7 @@ func client_level_ready(levelName: String) -> void:
 func spawn_player(peer_id: int, levelName: String) -> void:
 	if not multiplayer.is_server():
 		return
-	if avatars.has(peer_id):
+	if t.player.has(peer_id):
 		return
 	var avatar := player_scene.instantiate() as Node
 	avatar.name = str(peer_id)
@@ -126,14 +118,10 @@ func spawn_player(peer_id: int, levelName: String) -> void:
 	avatar.CurrentLevel = levelName  # Store BEFORE add_child
 	
 	var globalPos: Vector3
-	var sql = SQLite.new()
-	sql.path = database
-	sql.open_db()
-	sql.query_with_bindings("SELECT X, Y, Z FROM charStats WHERE Username = ? LIMIT 1;", [avatar.username])
-	if sql.query_result.size() > 0:
-		var r = sql.query_result[0]
+	t.sql.query_with_bindings("SELECT X, Y, Z FROM charStats WHERE Username = ? LIMIT 1;", [avatar.username])
+	if t.sql.query_result.size() > 0:
+		var r = t.sql.query_result[0]
 		globalPos = Vector3(float(r["X"]), float(r["Y"]), float(r["Z"]))
-	sql.close_db()
 	
 	add_child(avatar, true)
 	avatar.global_position = globalPos
@@ -173,7 +161,7 @@ func remove_from_level(id: int, avatar: CharacterBody3D) -> void:
 @rpc("any_peer", "reliable")
 func change_level(NextLevel: String, pos: Vector3) -> void:
 	var id = multiplayer.get_remote_sender_id()
-	var avatar = avatars[id]
+	var avatar = t.player[id]
 	remove_from_level(id, avatar)
 	avatar.process_mode = Node.PROCESS_MODE_DISABLED
 	loadedLevels[avatar.CurrentLevel].MpSync.set_visibility_for(id, false)
@@ -184,22 +172,19 @@ func change_level(NextLevel: String, pos: Vector3) -> void:
 func despawn_player(peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
-	if avatars.has(peer_id):
-		var avatar = avatars[peer_id]
+	if t.player.has(peer_id):
+		var avatar = t.player[peer_id]
 		loadedLevels[avatar.CurrentLevel].playersOnLevel.erase(peer_id)
 		if is_instance_valid(avatar):
 			var p = avatar.global_position
-			var sql = SQLite.new()
-			sql.path = "res://data/game_data.db"
-			sql.open_db()
-			sql.query_with_bindings(
+			t.sql.query_with_bindings(
 				"UPDATE charStats SET CurrentLevel = ?, X = ?, Y = ?, Z = ? WHERE Username = ?;",
 				[avatar.CurrentLevel, p.x, p.y, p.z, avatar.username]
 			)
-			sql.close_db()
 			avatar.queue_free()
-		avatars.erase(peer_id)
-		
+		t.playerName.erase(t.player[peer_id].username)
+		t.player.erase(peer_id)
+
 
 ##Runs on enter_tree
 func _on_child_added(node: Node) -> void:
@@ -208,7 +193,8 @@ func _on_child_added(node: Node) -> void:
 	var peer_id := node.name.to_int()
 	if peer_id == 0:
 		return
-	avatars[peer_id] = node
+	t.player[peer_id] = node
+	t.playerName[node.username] = node
 
 	var input := node.find_child("Input")
 	if input != null:

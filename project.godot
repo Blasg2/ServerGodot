@@ -20,7 +20,8 @@ config/version="1.0.0"
 run/main_scene="uid://bfshwoko470di"
 config/features=PackedStringArray("4.6")
 run/max_fps=60
-config/icon="res://icon.png"
+boot_splash/show_image=false
+config/icon="uid://bc4xl1ietmogn"
 
 [autoload]
 
@@ -38,6 +39,8 @@ NetworkManager="*uid://4nfm7km0c3lb"
 Ollama="*uid://dqmjqyg5t1lsb"
 control="*uid://dvqs7px0tmp1o"
 options="*uid://cc0p1cwi714l0"
+AchievementManager="*uid://dj1bkxbqna8jt"
+t="*uid://cua1w6u3nccq5"
 
 [display]
 
@@ -50,7 +53,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
+enabled=PackedStringArray("res://addons/_Godot-IDE_/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/font_auto_size_labels/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/indent_guidelines/plugin.cfg", "res://addons/milestone/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/virtual_joystick_plus/plugin.cfg")
 
 [file_customization]
 
@@ -67,6 +70,17 @@ import/fbx/enabled=false
 
 [input]
 
+ui_accept={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194309,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194310,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+ui_select={
+"deadzone": 0.5,
+"events": [Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":3,"pressure":0.0,"pressed":false,"script":null)
+]
+}
 move_west={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
@@ -125,6 +139,13 @@ enter={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[milestone]
+
+general/achievements_path="res://addons/milestone/demo/achievements/"
+debug/print_errors=true
+debug/print_output=true
+general/save_as_json=false
 
 [netfox]
 

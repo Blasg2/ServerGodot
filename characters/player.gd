@@ -12,7 +12,6 @@ var gravity = ProjectSettings.get_setting(&"physics/3d/default_gravity")
 var username: String
 var CurrentLevel: String
 
-
 func _notification(what):
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		afkRefresh.rpc_id(1, true)

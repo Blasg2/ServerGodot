@@ -24,47 +24,74 @@ properties/2/replication_mode = 2
 [sub_resource type="GDScript" id="GDScript_evndh"]
 resource_name = "camera_pivot"
 script/source = "extends Node3D
+
 @export var mouse_sensibility := 0.005
+@export var touch_sensibility := 0.005
 @export_range(-90.0, 0.0, 0.1, \"radians_as_degrees\") var min_vertical_angle: float = -PI/2
 @export_range(0.0, 90.0, 0.1, \"radians_as_degrees\") var max_vertical_angle: float = PI/4
 @onready var spring_arm := $SpringArm3D
 @export var joy_sensitivity := 3.0
 var joy_look: Vector2 = Vector2.ZERO
 var _touches: Dictionary = {}
+var _is_pinching: bool = false
+var _last_pinch_distance: float = 0.0
 
 func _ready() -> void:
 	control.joystick.connect(setJoy)
 
-func _input(event: InputEvent) -> void:
-	if $\"../Input\".is_multiplayer_authority():
-		if event is InputEventMouseMotion and not OS.has_feature(\"mobile\"):
-			rotation.y -= event.relative.x * mouse_sensibility
+func _unhandled_input(event: InputEvent) -> void:
+	if not $\"../Input\".is_multiplayer_authority():
+		return
+	
+	# Mouse look (PC)
+	if event is InputEventMouseMotion and not OS.has_feature(\"mobile\"):
+		rotation.y -= event.relative.x * mouse_sensibility
+		rotation.y = wrapf(rotation.y, 0.0, TAU)
+		rotation.x -= event.relative.y * mouse_sensibility
+		rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
+	
+	# Mouse zoom (PC)
+	if event.is_action_pressed(\"wheel_up\"):
+		_zoom(-1)
+	if event.is_action_pressed(\"wheel_down\"):
+		_zoom(1)
+	
+	# Touch start/end
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touches[event.index] = event.position
+			if _touches.size() == 2:
+				var points = _touches.values()
+				_last_pinch_distance = points[0].distance_to(points[1])
+				_is_pinching = true
+		else:
+			_touches.erase(event.index)
+			if _touches.size() < 2:
+				_is_pinching = false
+				_last_pinch_distance = 0.0
+	
+	# Touch drag
+	if event is InputEventScreenDrag:
+		if not _touches.has(event.index):
+			return
+		
+		_touches[event.index] = event.position
+		
+		# One finger = camera rotation
+		if _touches.size() == 1 and not _is_pinching:
+			rotation.y -= event.relative.x * touch_sensibility
 			rotation.y = wrapf(rotation.y, 0.0, TAU)
-			rotation.x -= event.relative.y * mouse_sensibility
+			rotation.x -= event.relative.y * touch_sensibility
 			rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
 		
-		if event.is_action_pressed(\"wheel_up\"):
-			_zoom(-1)
-		if event.is_action_pressed(\"wheel_down\"):
-			_zoom(1)
-		
-		# Pinch to zoom
-		if event is InputEventScreenTouch:
-			if event.pressed:
-				_touches[event.index] = event.position
-			else:
-				_touches.erase(event.index)
-		
-		if event is InputEventScreenDrag and _touches.size() == 2:
-			var old_pos = _touches[event.index]
-			_touches[event.index] = event.position
-			var keys = _touches.keys()
-			var other_key = keys[0] if event.index == keys[1] else keys[1]
-			var old_dist = old_pos.distance_to(_touches[other_key])
-			var new_dist = _touches[keys[0]].distance_to(_touches[keys[1]])
-			var diff = new_dist - old_dist
+		# Two fingers = pinch zoom
+		elif _touches.size() == 2:
+			var points = _touches.values()
+			var current_distance = points[0].distance_to(points[1])
+			var diff = current_distance - _last_pinch_distance
 			if abs(diff) > 2.0:
 				_zoom(-sign(diff))
+			_last_pinch_distance = current_distance
 
 func _process(delta: float) -> void:
 	if joy_look.length() > 0.1:
@@ -74,7 +101,7 @@ func _process(delta: float) -> void:
 		rotation.x = clamp(rotation.x, min_vertical_angle, max_vertical_angle)
 
 func _zoom(dir: float) -> void:
-	spring_arm.spring_length = clamp(spring_arm.spring_length + dir * 0.5, 1.5, 4.0)  #NOTE: step size, closest, farthest
+	spring_arm.spring_length = clamp(spring_arm.spring_length + dir * 0.5, 1.0, 4.0)
 
 func setJoy(_a, b) -> void:
 	b.analogic_changed.connect(_on_right_joy_analogic_changed)
@@ -127,6 +154,9 @@ script = ExtResource("8_25y1x")
 
 [node name="meshy" type="MeshInstance3D" parent="Mesh" unique_id=1029742667]
 skeleton = NodePath("")
+
+[node name="Chat" type="Marker3D" parent="Mesh/meshy" unique_id=1788173971]
+transform = Transform3D(-1.2405982e-07, -6.0183157e-21, -2.8381572, -2.8381572, -4.6239458e-07, 1.2405982e-07, -4.6239458e-07, 2.8381572, 2.0211909e-14, 1.7295219, -7.6880355e-07, 4.2548532)
 
 [node name="SpringArmPivot" type="Node3D" parent="." unique_id=1413166376]
 transform = Transform3D(1, 0, 1.9841906e-09, 0, 1, 0, -1.9841906e-09, 0, 1, 0, 1.3908092, 0.0073384643)

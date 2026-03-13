@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bvyoqkhliv7rl"
-path.s3tc="res://.godot/imported/LiarsDice_SexyLiarsDice_normal.jpg-caef965eca04b9fab63f787be8b9cdfb.s3tc.ctex"
-path.etc2="res://.godot/imported/LiarsDice_SexyLiarsDice_normal.jpg-caef965eca04b9fab63f787be8b9cdfb.etc2.ctex"
+uid="uid://caom7ubde7j1b"
+path.s3tc="res://.godot/imported/realistic_blackboard_2.png-0b2b8698d0de918f8726f0bf0067a5ee.s3tc.ctex"
+path.etc2="res://.godot/imported/realistic_blackboard_2.png-0b2b8698d0de918f8726f0bf0067a5ee.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "fc7c4727c0987e33dbbee382d0111820"
+"md5": "14e47a933772b19ecdc0805319a4f43b"
 }
 
 [deps]
 
-source_file="res://Art/LiarsDice/LiarsDice_SexyLiarsDice_normal.jpg"
-dest_files=["res://.godot/imported/LiarsDice_SexyLiarsDice_normal.jpg-caef965eca04b9fab63f787be8b9cdfb.s3tc.ctex", "res://.godot/imported/LiarsDice_SexyLiarsDice_normal.jpg-caef965eca04b9fab63f787be8b9cdfb.etc2.ctex"]
+source_file="res://Art/blackboard/realistic_blackboard_2.png"
+dest_files=["res://.godot/imported/realistic_blackboard_2.png-0b2b8698d0de918f8726f0bf0067a5ee.s3tc.ctex", "res://.godot/imported/realistic_blackboard_2.png-0b2b8698d0de918f8726f0bf0067a5ee.etc2.ctex"]
 
 [params]
 
@@ -31,7 +31,7 @@ compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=1
-roughness/src_normal="res://LiarsDice_SexyLiarsDice_normal.jpg"
+roughness/src_normal="res://Art/blackboard/realistic_blackboard_2.png"
 process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
@@ -41,5 +41,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=512
 detect_3d/compress_to=0
