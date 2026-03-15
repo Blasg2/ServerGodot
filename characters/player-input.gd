@@ -1,44 +1,25 @@
 extends Node
 class_name PlayerInputFPS
 
-@export var mouse_sensitivity: float = 0.7
-
 var is_setup: bool = false
 var override_mouse: bool = false
-var mouse_rotation: Vector2 = Vector2.ZERO
-var look_angle: Vector2 = Vector2.ZERO
 var movement: Vector3 = Vector3.ZERO
 var jump: bool = false
 var camera_yaw: float = 0.0
 var joy_movement: Vector2 = Vector2.ZERO
 
-
-func _enter_tree() -> void:
+func _ready():
 	if is_multiplayer_authority():
-		NetworkTime.before_tick_loop.connect(_before_tick_loop)
+		NetworkTime.before_tick_loop.connect(_gather)
 		control.joystick.connect(setJoy)
 
-
-func _input(event: InputEvent) -> void:
-	if multiplayer.multiplayer_peer == null:
-		return
-	if !is_multiplayer_authority(): return
-	if event.is_action_pressed("escape"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			override_mouse = true
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			override_mouse = false
-
-func _process(_delta: float) -> void:
+func _gather():
 	if not is_multiplayer_authority():
 		return
 	
 	if not is_setup:
 		setup()
 	
-	# Gather input (same logic as old _gather)
 	movement = Vector3(
 		Input.get_axis("move_west", "move_east") + joy_movement.x,
 		0,
@@ -52,19 +33,19 @@ func _process(_delta: float) -> void:
 	var pivot = get_node_or_null("../SpringArmPivot")
 	if pivot:
 		camera_yaw = pivot.global_rotation.y
-	
 
-	
-func _before_tick_loop():
-	_send_input.rpc_id(1, movement, jump, camera_yaw)
-
-
-@rpc("authority", "unreliable_ordered", "call_remote")
-func _send_input(mv: Vector3, jmp: bool, yaw: float) -> void:
-	# Runs on server — update the variables the server reads
-	movement = mv
-	jump = jmp
-	camera_yaw = yaw
+func _input(event: InputEvent) -> void:
+	if multiplayer.multiplayer_peer == null:
+		return
+	if not is_multiplayer_authority():
+		return
+	if event.is_action_pressed("escape"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			override_mouse = true
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			override_mouse = false
 
 func setup():
 	is_setup = true

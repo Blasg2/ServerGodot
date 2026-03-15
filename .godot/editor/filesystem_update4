@@ -5,6 +5,4 @@ res://Art/PsxChar/gariba.tres
 res://Art/PsxChar/joj.tres
 res://Art/PsxChar/gotica.tres
 res://Art/PsxChar/lil.tres
-res://Scripts/falar.tscn
-res://characters/hud.tscn
-res://Maps/level1.tscn
+res://characters/player.gd

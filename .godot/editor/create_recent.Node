@@ -1,3 +1,4 @@
+res://addons/netfox/rollback/rollback-synchronizer.gd
 Control
 Marker3D
 Panel
@@ -12,4 +13,3 @@ Label3D
 CollisionShape3D
 StaticBody3D
 Area3D
-Button
